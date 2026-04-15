@@ -1,34 +1,16 @@
 import pygame
-import sys
-
-pygame.init()
-
-screen = pygame.display.set_mode((1080, 720))
-pygame.display.set_caption("Start Menu Set")
 
 WHITE = (255,255,255)
 LIGHT = (170,170,170)
 DARK = (100,100,120)
 BG = (60, 25, 100)
 
+pygame.font.init()
 font = pygame.font.SysFont("Corbel", 40)
 sub_font = pygame.font.SysFont("Corbel", 25)
 
-def game():
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
 
-        screen.fill((40, 40, 40))
-
-        text = font.render("Game Started!", True, WHITE)
-        screen.blit(text, (250, 350))
-
-        pygame.display.update()
-
-def start_menu():
+def start_menu(screen):
     logo_image = pygame.image.load("images/set_cards.png").convert_alpha()
 
     while True:
@@ -63,14 +45,10 @@ def start_menu():
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+                return "QUIT"
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if play_button.collidepoint(mouse):
-                    game()
+                    return "GAME"
                 if quit_button.collidepoint(mouse):
-                    pygame.quit()
-                    sys.exit()
+                    return "QUIT"
         pygame.display.update()
-
-start_menu()
