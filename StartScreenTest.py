@@ -29,7 +29,7 @@ def game():
         pygame.display.update()
 
 def start_menu():
-    logo_image = pygame.image.load("set_cards.png").convert_alpha()
+    logo_image = pygame.image.load("images/set_cards.png").convert_alpha()
 
     while True:
         screen.fill(BG)
