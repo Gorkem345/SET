@@ -1,10 +1,17 @@
 #Create a dictionary and a class for cards, link the Card instances to the coordinates of the image
 #to retrieve the intended part of the image
-
-
+#Import cards from this file (image_dictionary) to have all 81 cards with their images. To use the images, upload the
+#images/cover.png and use the coordinates attribute to get that single card's image.
+#Ex:
+#sheet = pygame.image.load("images/cover.png").convert()
+#card_rect = pygame.Rect(dict[id].coordinates[0], dict[id].coordinates[1], card_width, card_height) #Coordinates
+#first_card = sheet.subsurface(card_rect) #Subsurface the needed part of the image
+#first_card = pygame.transform.scale(first_card, (card_width*2, card_height*2)) #Scale the image as needed
 
 # A class to represent the cards of the SET game
 '''
+******Rules for Indexing******
+
 FILLING
 empty -> e
 semi-filled -> s
@@ -29,12 +36,21 @@ Example id: empty red circle 1 -> erc1
 '''
 class Card:
     def __init__(self, x, y, width, height):
-        self.coordinates = [x, y, width, height]
+        self._coordinates = [x, y, width, height]
         self.filling = "e"
         self.color = "r"
         self.shape = "c"
         self.count = 1
 
+    @property
+    def coordinates(self):
+        return self._coordinates
+
+    @coordinates.setter
+    def coordinates(self, value):
+        self._coordinates = value
+
+    #Set the specialities of the card
     def set(self, filling, color, shape, count):
         self.count = count
         self.color = color
@@ -42,13 +58,12 @@ class Card:
         self.filling = filling
 
     def __repr__(self):
-        return str(self.coordinates) + str(self.filling) + str(self.color) + str(self.shape) + str(self.count) + "\n"
-
+        return str("Coordinates: ") + str(self.coordinates) + str(" / ID: ") + str(self.filling) + str(self.color) + str(self.shape) + str(self.count) + "\n"
 
 
 
 #Create a dictionary to store the cards
-dict = {}
+cards = {}
 
 ids = [
     ["epc2", "fgs2", "srd2", "frs1", "spd1", "egc1", "sgd3", "erc3", "fps3"],
@@ -64,15 +79,15 @@ ids = [
 
 #Found the pattern to get the coordinates of each card
 card_width = 178
-card_height = 116
+card_height = 115
 
 x_cor = 13
 y_cor = 11
 
 for row in range(9):
     for col in range(9):
-        dict[f"{row} {col}"] = Card(x_cor, y_cor, card_width, card_height)
-        dict[f"{row} {col}"].set(ids[row][col][0], ids[row][col][1], ids[row][col][2], ids[row][col][3])
+        cards[ids[row][col]] = Card(x_cor, y_cor, card_width, card_height)
+        cards[ids[row][col]].set(ids[row][col][0], ids[row][col][1], ids[row][col][2], ids[row][col][3])
         x_cor = x_cor + card_width
         if col % 3 == 2 and col != 0:
             x_cor += 47
@@ -88,4 +103,4 @@ for row in range(9):
 
 
 #Debug dictionary
-print(dict)
+print(cards)
