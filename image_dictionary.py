@@ -35,12 +35,12 @@ COUNT:
 Example id: empty red circle 1 -> erc1
 '''
 class Card:
-    def __init__(self, x, y, width, height):
-        self._coordinates = [x, y, width, height]
-        self.filling = "e"
-        self.color = "r"
-        self.shape = "c"
-        self.count = 1
+    def __init__(self, id):
+        self._coordinates = [0,0,0,0] #Temporary coordinate value.
+        self.filling = id[0]
+        self.color = id[1]
+        self.shape = id[2]
+        self.count = id[3]
 
     @property
     def coordinates(self):
@@ -50,19 +50,15 @@ class Card:
     def coordinates(self, value):
         self._coordinates = value
 
-    #Set the specialities of the card
-    def set(self, filling, color, shape, count):
-        self.count = count
-        self.color = color
-        self.shape = shape
-        self.filling = filling
+    #Set the coordinates of the card
+    def set(self, x, y, width, height):
+        self.coordinates = [x,y,width,height]
 
     def __repr__(self):
         return str("Coordinates: ") + str(self.coordinates) + str(" / ID: ") + str(self.filling) + str(self.color) + str(self.shape) + str(self.count) + "\n"
 
 
-
-#Create a dictionary to store the cards
+# Create a dictionary to store the cards
 cards = {}
 
 ids = [
@@ -77,7 +73,7 @@ ids = [
     ["fpc2", "sgs2", "erd2", "srs1", "epd1", "fgc1", "egd3", "frc3", "sps3"]
 ]
 
-#Found the pattern to get the coordinates of each card
+# Found the pattern to get the coordinates of each card
 card_width = 178
 card_height = 115
 
@@ -86,8 +82,8 @@ y_cor = 11
 
 for row in range(9):
     for col in range(9):
-        cards[ids[row][col]] = Card(x_cor, y_cor, card_width, card_height)
-        cards[ids[row][col]].set(ids[row][col][0], ids[row][col][1], ids[row][col][2], ids[row][col][3])
+        cards[ids[row][col]] = Card(ids[row][col])
+        cards[ids[row][col]].set(x_cor, y_cor, card_width, card_height)
         x_cor = x_cor + card_width
         if col % 3 == 2 and col != 0:
             x_cor += 47
