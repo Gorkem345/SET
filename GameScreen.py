@@ -1,7 +1,6 @@
 import pygame
 import image_dictionary
-
-WHITE = (255, 255, 255)
+from constants import WHITE
 
 class GameScreen:
     def __init__(self, game):
