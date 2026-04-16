@@ -71,7 +71,7 @@ class Computer:
 
 #Test Debug
 #computer = Computer()
-#table = [image_dictionary.Card("erc1"), image_dictionary.Card("erc2"), image_dictionary.Card("erc3"), image_dictionary.Card("src1"), image_dictionary.Card("frc1")]
+#table = [image_dictionary.Card("erc1"), image_dictionary.Card("erc2"), image_dictionary.Card("erc3"), image_dictionary.Card("src1"), image_dictionary.Card("frc1"), image_dictionary.Card("frc2")]
 #print(computer.find_sets(table))
 
 #print(computer.is_set(table[0], table[3], table[4]))
