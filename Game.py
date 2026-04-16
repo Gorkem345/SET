@@ -2,7 +2,7 @@ import pygame
 import sys
 from StartScreen import StartScreen
 from GameScreen import GameScreen
-#from Rules import RulesScreen
+from Rules import RulesScreen
 from constants import WHITE, LIGHT, DARK, BG
 
 class Game:
@@ -15,6 +15,7 @@ class Game:
 
         self.start_screen = StartScreen(self)
         self.game_screen = GameScreen(self)
+        self.rules_screen = RulesScreen(self)
 
         self.current_screen = self.start_screen
         self.running = True
