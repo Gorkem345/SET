@@ -97,7 +97,7 @@ for row in range(9):
     x_cor = 13
     y_cor += 115
     if row % 3 == 2 and row != 0:
-        y_cor += 64
+        y_cor += 63
     else:
         y_cor += 27
 
