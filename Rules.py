@@ -36,15 +36,13 @@ class RulesScreen:
     def draw(self, screen):
         mouse = pygame.mouse.get_pos()
         screen.fill(BG)
-
+        # Title
         title_text = self.game.title_font.render("How to play Set:", True, WHITE)
         title_rect = title_text.get_rect(center=(1080 // 2, 80))
         screen.blit(title_text, title_rect)
-
+        # Go back button --> goes back to StartScreen
         pygame.draw.rect(screen, LIGHT if self.goback_button.collidepoint(mouse) else DARK, self.goback_button)
-
         goback_text = self.game.font.render("Go back", True, WHITE)
-
         screen.blit(goback_text, goback_text.get_rect(center=self.goback_button.center))
 
         y = 120

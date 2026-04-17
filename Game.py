@@ -4,6 +4,8 @@ from StartScreen import StartScreen
 from GameScreen import GameScreen
 from Rules import RulesScreen
 from WinnerScreen import WinnerScreen
+from TableDisplay import Display_card
+from set_table import Table
 from constants import WHITE, LIGHT, DARK, BG
 
 class Game:
@@ -14,6 +16,10 @@ class Game:
         self.font = pygame.font.SysFont("Corbel", 40)
         self.sub_font = pygame.font.SysFont("Corbel", 25)
         self.title_font = pygame.font.SysFont("Corbel", 60)
+
+        self.display_card = Display_card()
+        self.table = Table()
+        self.table.handle_start_game()
 
         #create different screens/pages
         self.start_screen = StartScreen(self) #create a startscreen instance StartScreen()

@@ -1,11 +1,13 @@
 import pygame
 import image_dictionary
 from constants import WHITE, BG, DARK, LIGHT
+from TableDisplay import Display_board
+from set_table import Table
 
 class GameScreen:
     def __init__(self, game): #self.game_screen = GameScreen(self)
         self.game = game #game here is the Game object, so self.game = Game()
-
+        self.board = Display_board(game, Table)
         #Player interface
         self.p1setbutton = pygame.Rect(200, 80, 100, 60)
         self.p2setbutton = pygame.Rect(200, 180, 100, 60)
@@ -128,6 +130,9 @@ class GameScreen:
     def draw(self, screen): #screen here is the self.screen from Game
         mouse = pygame.mouse.get_pos()
         screen.fill(BG)
+
+        #Display the board
+        self.board.draw(screen)
 
         # Check timer every frame
         time_left = self.get_time_left()
