@@ -14,7 +14,7 @@ class Display_card:
         rect = pygame.Rect(coords[0], coords[1], coords[2], coords[3])
         card = self.sheet.subsurface(rect)
         # Scale
-        card = pygame.transform.scale(card, (coords[2] * 2, coords[3] * 2))
+        card = pygame.transform.scale(card, (coords[2] * 1.1, coords[3] * 1.1))
         # Rotate 90 degrees
         card = pygame.transform.rotate(card, 90)
         return card
@@ -29,8 +29,8 @@ class Display_board:
         self.cols = 4
         self.rows = 3
 
-        self.start_x = 150
-        self.start_y = 100
+        self.start_x = 400
+        self.start_y = 70
 
         self.spacing_x = 150
         self.spacing_y = 200
