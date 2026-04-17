@@ -54,6 +54,9 @@ class Card:
     def set(self, x, y, width, height):
         self.coordinates = [x,y,width,height]
 
+    def get_id(self):
+        return str(self.filling) + str(self.color) + str(self.shape) + str(self.count)
+
     def __repr__(self):
         return str("Coordinates: ") + str(self.coordinates) + str(" / ID: ") + str(self.filling) + str(self.color) + str(self.shape) + str(self.count) + "\n"
 
@@ -99,4 +102,4 @@ for row in range(9):
 
 
 #Debug dictionary
-print(cards)
+#print(cards)
