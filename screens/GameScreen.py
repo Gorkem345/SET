@@ -105,20 +105,39 @@ class GameScreen:
     def handle_event(self, event):
         mouse = pygame.mouse.get_pos()  # get mouse position
 
-        if event.type == pygame.MOUSEBUTTONDOWN:  # if mouse was clicked
-            if self.setbutton.collidepoint(mouse):  # if the mouse is clicked inside the play button area
-                if self.active_player is None: #other SET button cannot be activated
-                    self.start_set_timer(1)
+        if event.type == pygame.MOUSEBUTTONDOWN:
 
-            # PLUS button
+            # 1. Check if the SET button is clicked
+            if self.setbutton.collidepoint(mouse):
+                if self.active_player is None:
+                    self.start_set_timer(1)
+                    #Tell the table logic that it is allowed to accept clicks now!
+                    self.game.table.handle_start_selection()
+
+            # 2. Check if they clicked the PLUS button
             elif self.plus.collidepoint(mouse):
                 if self.active_player == 1:
                     self.p1_score += 1
                     self.check_winner()
-
                 elif self.active_player == 2:
                     self.p2_score += 1
                     self.check_winner()
+
+            # Check if they clicked a CARD
+            elif self.active_player is not None:
+                # Ask the board which card index the mouse is over
+                clicked_index = self.board.get_clicked_card_index(mouse)
+
+                if clicked_index is not None:
+                    # Pass the click to your Table logic
+                    self.game.table.handle_click(clicked_index)
+
+                    # If handle_click finished processing 3 cards, selection_mode will turn False
+                    if not self.game.table.selection_mode:
+                        # (Ideally, you check if they actually got it right here to award points)
+
+                        # Stop the timer and end the turn
+                        self.clear_set_timer()
 
     def draw(self, screen):
         mouse = pygame.mouse.get_pos()
