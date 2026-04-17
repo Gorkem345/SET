@@ -60,18 +60,25 @@ class GameScreen:
         if self.active_player is None:
             return "%d" % 15
 
-        current_time = pygame.time.get_ticks() #what is the time now (from game start until now)
-        #print(f'current time: {current_time}')
-
-        elapsed =  current_time - self.set_start_time #the time now - the time you click the SET button
-                                                      #it is the time passed after you click the SET button
+        current_time = pygame.time.get_ticks()
+        elapsed = current_time - self.set_start_time
         remaining = self.set_time_limit - elapsed
 
         if remaining <= 0:
+            # Clear the highlighted cards when time is up!
+            self.game.table.selection_mode = False
+            self.game.table.selected = []
+
+            if self.active_player == 1:
+                self.p1_score -= 1
+            elif self.active_player == 2:
+                self.p2_score -= 1
+
+
             self.clear_set_timer()
             return 0
 
-        return remaining // 1000 + 1 #15 + 1 to make sure the count down start from 15s instead of 14
+        return remaining // 1000 + 1
 
     def check_winner(self):
         #GameScreen knows Game
@@ -130,12 +137,24 @@ class GameScreen:
 
                 if clicked_index is not None:
                     # Pass the click to your Table logic
-                    self.game.table.handle_click(clicked_index)
+                    forms_set = self.game.table.handle_click(clicked_index)
 
                     # If handle_click finished processing 3 cards, selection_mode will turn False
                     if not self.game.table.selection_mode:
                         # (Ideally, you check if they actually got it right here to award points)
-
+                        if forms_set is not None:
+                            if forms_set:
+                                if self.active_player == 1:
+                                    self.p1_score += 1
+                                    self.check_winner()
+                                elif self.active_player == 2:
+                                    self.p2_score += 1
+                                    self.check_winner()
+                            else:
+                                if self.active_player == 1:
+                                    self.p1_score -= 1
+                                elif self.active_player == 2:
+                                    self.p2_score -= 1
                         # Stop the timer and end the turn
                         self.clear_set_timer()
 
@@ -233,12 +252,4 @@ class GameScreen:
 
             timer_text = self.game.sub_font.render(f"Time left: {time_left}s", True, WHITE)
             screen.blit(timer_text, (message_panel.x + 20, message_panel.y + 60))
-
-
-
-
-
-
-
-
 
