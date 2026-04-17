@@ -88,19 +88,17 @@ class GameScreen:
         # in this case you need self.game (Game object), store the score and winner
         # as an attribute of Game object so that it can access to WinnerScreen
 
-        if self.p1_score >= 30:
-            self.game.winner = "Player 1!"
-            self.game.p1_score = self.p1_score
-            self.game.p2_score = self.p2_score
-            self.game.current_screen = self.game.winner_screen
+        if not self.game.table.find_sets():
+            if self.p1_score > self.p2_score:
+                self.game.winner = "Player 1!"
 
-            # reset timer, player and score
-            self.clear_set_timer()
-            self.p1_score = 0  # initial score
-            self.p2_score = 0
 
-        elif self.p2_score >= 30:
-            self.game.winner = "Player 2!"
+            elif self.p1_score < self.p2_score:
+                self.game.winner = "Player 2!"
+
+            else:
+                self.game.winner = "Player 1 and Player 2!"
+
             self.game.p1_score = self.p1_score
             self.game.p2_score = self.p2_score
             self.game.current_screen = self.game.winner_screen
