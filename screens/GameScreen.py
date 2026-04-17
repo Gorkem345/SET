@@ -1,8 +1,7 @@
 import pygame
-import image_dictionary
-from constants import WHITE, BG, DARK, LIGHT
-from TableDisplay import Display_board
-from set_table import Table
+from utils.constants import WHITE, DARK, LIGHT
+from screens.TableDisplay import Display_board
+from utils.set_table import Table
 
 class GameScreen:
     def __init__(self, game): #self.game_screen = GameScreen(self)

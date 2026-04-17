@@ -1,6 +1,5 @@
 import pygame
-import sys
-from constants import WHITE, LIGHT, DARK, BG
+from utils.constants import WHITE, LIGHT, DARK, BG
 
 class RulesScreen:
     def __init__(self, game):

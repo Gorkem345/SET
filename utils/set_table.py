@@ -1,5 +1,4 @@
-from image_dictionary import cards
-from image_dictionary import Card
+from utils.image_dictionary import cards
 import random
 import copy
 

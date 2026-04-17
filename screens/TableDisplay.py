@@ -1,6 +1,4 @@
 import pygame
-from set_table import Table
-from image_dictionary import Card
 
 class Display_card:
     def __init__(self):

@@ -1,5 +1,5 @@
 import pygame
-from constants import WHITE, LIGHT, DARK, BG
+from utils.constants import WHITE, LIGHT, DARK, BG
 
 class WinnerScreen:
     def __init__(self, game):
