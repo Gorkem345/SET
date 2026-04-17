@@ -106,6 +106,14 @@ class Table:
         self.selection_mode = True
         self.selected = []
 
+    def give_hint(self):
+        sets = self.find_sets()
+        if sets != []:
+            hint = random.choice(sets)
+        else:
+            hint = False
+        return hint
+
     def __repr__(self):
         message = str("")
         for index in range(len(self.cards_on_table)):
