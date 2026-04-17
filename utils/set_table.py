@@ -26,7 +26,7 @@ class Table:
                 self.selected.append(index)
                 if len(self.selected) == 3:
                     return self.handle_selection()
-        return False
+        return None #No complete selection made yet
 
     def handle_selection(self): #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         set_formed = False
