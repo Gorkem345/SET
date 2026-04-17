@@ -6,7 +6,7 @@ from utils.set_table import Table
 class GameScreen:
     def __init__(self, game): #self.game_screen = GameScreen(self)
         self.game = game #game here is the Game object, so self.game = Game()
-        self.board = Display_board(game, Table)
+        self.board = Display_board(game)
         #Player interface
         self.setbutton = pygame.Rect(200, 80, 198, 80)
 

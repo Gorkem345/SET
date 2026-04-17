@@ -1,4 +1,6 @@
 import pygame
+from utils.set_table import Table
+import utils.image_dictionary as dict
 
 class Display_card:
     def __init__(self):
@@ -18,9 +20,9 @@ class Display_card:
         return card
 
 class Display_board:
-    def __init__(self, game, Table):
+    def __init__(self, game):
         self.game = game
-        self.table = Table()
+        self.table = self.game.table
         self.display_card = game.display_card
 
         # Grid settings
