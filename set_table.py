@@ -149,8 +149,7 @@ def is_set(card1, card2, card3):
         return True
     else:
         return False
-
-
+'''
 #Debug
 myTable = Table()
 myTable.handle_start_game()
@@ -172,5 +171,4 @@ while not myTable.game_end:
     print(myTable)
     sets = myTable.find_sets()
     print(sets)
-
-
+'''
