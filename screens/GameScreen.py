@@ -103,10 +103,11 @@ class GameScreen:
             self.game.p2_score = self.p2_score
             self.game.current_screen = self.game.winner_screen
 
-            # reset timer, player and score
+            # reset timer, score and the game
             self.clear_set_timer()
             self.p1_score = 0  # initial score
             self.p2_score = 0
+            self.game.table.handle_start_game()
 
     def handle_event(self, event):
         mouse = pygame.mouse.get_pos()  # get mouse position
