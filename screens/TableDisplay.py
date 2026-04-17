@@ -2,22 +2,35 @@ import pygame
 from utils.set_table import Table
 import utils.image_dictionary as dict
 
+
 class Display_card:
     def __init__(self):
         self.sheet = pygame.image.load("images/cover.png").convert()
-        # Make white invisible
-        #self.sheet.set_colorkey((255, 255, 255))
+        self.sheet.set_colorkey((255, 255, 255))
 
     def get_card_image(self, card_id):
         coords = dict.cards[card_id].coordinates
 
-        rect = pygame.Rect(coords[0], coords[1], coords[2], coords[3])
+        # Shave off the messy borders
+        crop_x = 8
+        crop_y = 8
+
+        rect = pygame.Rect(
+            coords[0] + crop_x,
+            coords[1] + crop_y,
+            coords[2] - (crop_x * 2),
+            coords[3] - (crop_y * 2)
+        )
+
         card = self.sheet.subsurface(rect)
+
         # Scale
-        card = pygame.transform.scale(card, (coords[2] * 1.1, coords[3] * 1.1))
+        card = pygame.transform.scale(card, (int(rect.width * 1.2), int(rect.height * 1.2)))
+
         # Rotate 90 degrees
         card = pygame.transform.rotate(card, 90)
         return card
+
 
 class Display_board:
     def __init__(self, game):
@@ -35,8 +48,11 @@ class Display_board:
         self.spacing_x = 150
         self.spacing_y = 200
 
-    #Detect which card was clicked
     def get_clicked_card_index(self, mouse_pos):
+        # We need to calculate based on the new white background sizes
+        CARD_WIDTH = 120
+        CARD_HEIGHT = 185
+
         for index in range(12):
             if self.table.cards_on_table[index] is None:
                 continue
@@ -47,20 +63,19 @@ class Display_board:
             x = self.start_x + col * self.spacing_x
             y = self.start_y + row * self.spacing_y
 
-            # Grab the image to know its exact width and height
-            card_id = self.table.cards_on_table[index].get_id()
-            card_image = self.display_card.get_card_image(card_id)
+            # Check collision against the white card background
+            card_rect = pygame.Rect(x, y, CARD_WIDTH, CARD_HEIGHT)
 
-            # Create a virtual rectangle representing the card's position on screen
-            card_rect = pygame.Rect(x, y, card_image.get_width(), card_image.get_height())
-
-            # Check if the mouse click is inside this rectangle
             if card_rect.collidepoint(mouse_pos):
                 return index
 
-        return None  # Returned if they clicked empty table space
+        return None
 
     def draw(self, screen):
+        # Define the physical size of your playing cards
+        CARD_WIDTH = 120
+        CARD_HEIGHT = 185
+
         for index, card in enumerate(self.table.cards_on_table):
             if card is None:
                 continue
@@ -73,15 +88,30 @@ class Display_board:
             y = self.start_y + row * self.spacing_y
 
             card_image = self.display_card.get_card_image(card_id)
+            bg_rect = pygame.Rect(x, y, CARD_WIDTH, CARD_HEIGHT)
 
-            # Draw Highlight
-            # Check if this specific card's index is in the selected list
+            # --- HIGHLIGHTS ---
+            # 1. Selected highlight (Yellow)
             if index in self.table.selected:
-                # Create a rectangle slightly larger than the card
-                highlight_rect = pygame.Rect(x - 5, y - 5, card_image.get_width() + 10, card_image.get_height() + 10)
-                # Draw a bright yellow rounded box
-                pygame.draw.rect(screen, (255, 230, 0), highlight_rect, border_radius=8)
-                # Draw a darker orange border around it to make it pop
-                pygame.draw.rect(screen, (255, 150, 0), highlight_rect, width=3, border_radius=8)
+                highlight_rect = pygame.Rect(x - 5, y - 5, CARD_WIDTH + 10, CARD_HEIGHT + 10)
+                pygame.draw.rect(screen, (255, 230, 0), highlight_rect, border_radius=12)
+                pygame.draw.rect(screen, (255, 150, 0), highlight_rect, width=3, border_radius=12)
 
-            screen.blit(card_image, (x, y))
+            # 2. Hint highlight (Cyan)
+            elif hasattr(self.table, 'hinted') and index in self.table.hinted:
+                hint_rect = pygame.Rect(x - 5, y - 5, CARD_WIDTH + 10, CARD_HEIGHT + 10)
+                pygame.draw.rect(screen, (0, 255, 255), hint_rect, border_radius=12)
+                pygame.draw.rect(screen, (0, 150, 255), hint_rect, width=3, border_radius=12)
+
+            else:
+                # Subtle dark border if not highlighted
+                pygame.draw.rect(screen, (100, 100, 100), bg_rect, width=2, border_radius=10)
+
+            # Draw the perfect white card background (this goes ON TOP of the highlight so the highlight looks like a border!)
+            pygame.draw.rect(screen, (255, 255, 255), bg_rect, border_radius=10)
+
+            # Center the shape inside the white card
+            img_x = x + (CARD_WIDTH - card_image.get_width()) // 2
+            img_y = y + (CARD_HEIGHT - card_image.get_height()) // 2
+
+            screen.blit(card_image, (img_x, img_y))
