@@ -9,7 +9,7 @@ class StartScreen:
         self.game = game #store the Game object inside this Startscreen
                          #because it need Game, the main controller to run
 
-        self.logo = pygame.image.load("set_cards.png").convert_alpha()
+        self.logo = pygame.image.load("images/set_cards.png").convert_alpha()
         # Rectangle of button
         self.play_button = pygame.Rect(470, 310, 140, 80)
         self.quit_button = pygame.Rect(470, 410, 140, 50)
