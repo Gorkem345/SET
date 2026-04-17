@@ -2,8 +2,6 @@ import pygame
 import image_dictionary
 from constants import WHITE, BG, DARK, LIGHT
 
-
-
 class GameScreen:
     def __init__(self, game): #self.game_screen = GameScreen(self)
         self.game = game #game here is the Game object, so self.game = Game()
@@ -35,7 +33,10 @@ class GameScreen:
     def start_set_timer(self, player):
         """Start the 15-second answer period for one player."""
         self.active_player = player
-        self.set_start_time = pygame.time.get_ticks() #How many milliseconds have passed since the game started
+        self.set_start_time = pygame.time.get_ticks() #it is the time pass when the game start until you click SET button
+        #a = f'set_start_time: {self.set_start_time}'
+        #print(a)
+
 
     def clear_set_timer(self):
         """Stop the answer period."""
@@ -48,14 +49,18 @@ class GameScreen:
         if self.active_player is None:
             return "%d" % 15
 
-        current_time = pygame.time.get_ticks()
-        elapsed = current_time - self.set_start_time
+        current_time = pygame.time.get_ticks() #what is the time now (from game start until now)
+        #print(f'current time: {current_time}')
+
+        elapsed =  current_time - self.set_start_time #the time now - the time you click the SET button
+                                                      #it is the time passed after you click the SET button
         remaining = self.set_time_limit - elapsed
 
         if remaining <= 0:
             self.clear_set_timer()
             return 0
-        return remaining // 1000 + 1
+
+        return remaining // 1000 + 1 #15 + 1 to make sure the count down start from 15s instead of 14
 
     def check_winner(self):
         #GameScreen knows Game
@@ -70,13 +75,21 @@ class GameScreen:
             self.game.p2_score = self.p2_score
             self.game.current_screen = self.game.winner_screen
 
+            # reset timer, player and score
+            self.clear_set_timer()
+            self.p1_score = 0  # initial score
+            self.p2_score = 0
+
         elif self.p2_score >= 30:
             self.game.winner = "Player 2!"
             self.game.p1_score = self.p1_score
             self.game.p2_score = self.p2_score
             self.game.current_screen = self.game.winner_screen
 
-
+            # reset timer, player and score
+            self.clear_set_timer()
+            self.p1_score = 0  # initial score
+            self.p2_score = 0
 
     def handle_event(self, event):
         mouse = pygame.mouse.get_pos()  # get mouse position

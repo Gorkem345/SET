@@ -30,7 +30,7 @@ class Game:
         self.winner_screen = WinnerScreen(self)
 
 
-        self.current_screen = self.start_screen #whatever store in current_screen, show it
+        self.current_screen = self.start_screen
         self.running = True
         #self.clock = pygame.time.Clock()  maybe we need to limit the FPS????
 
@@ -38,9 +38,6 @@ class Game:
         self.winner = ""
         self.p1_score = 0
         self.p2_score = 0
-
-
-
 
     def run(self):
         while self.running:
@@ -64,4 +61,5 @@ class Game:
         sys.exit()
 
 if __name__ == "__main__":
-    Game().run()
+    Game().run() #it call run function ->while loop
+                  # ->the mouse click or keyboard type will be captured and pass to handle_event function in StartScreen

@@ -1,13 +1,9 @@
 import pygame
 from constants import WHITE, LIGHT, DARK, BG
-from GameScreen import GameScreen
-
-
-
 
 class WinnerScreen:
     def __init__(self, game):
-        self.game = game
+        self.game = game #this is a genius idea to connect to the Game object
         self.homepage_button = pygame.Rect(470, 410, 140, 50)
 
     def handle_event(self, event):
