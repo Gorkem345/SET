@@ -102,4 +102,4 @@ for row in range(9):
 
 
 #Debug dictionary
-print(cards)
+#print(cards)
