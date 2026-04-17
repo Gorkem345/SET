@@ -12,7 +12,7 @@ class GameScreen:
         self.setbutton = pygame.Rect(200, 80, 198, 80)
 
         # testing button
-        self.plus = pygame.Rect(500, 80, 100, 40)
+        #self.plus = pygame.Rect(500, 80, 100, 40)
 
         # HINT button
         self.hint_button = pygame.Rect(0, 0, 100, 40)
@@ -111,31 +111,43 @@ class GameScreen:
     def handle_event(self, event):
         mouse = pygame.mouse.get_pos()  # get mouse position
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-
-            # 1. Check if the SET button is clicked
-            if self.setbutton.collidepoint(mouse):
+        # --- KEYBOARD EVENTS (For SET calls) ---
+        if event.type == pygame.KEYDOWN:
+            # Player 1 hits SPACEBAR
+            if event.key == pygame.K_SPACE:
                 if self.active_player is None:
                     self.start_set_timer(1)
-                    # Tell the table logic that it is allowed to accept clicks now!
                     self.game.table.handle_start_selection()
 
-            # 2. Check if they clicked the PLUS button
-            elif self.plus.collidepoint(mouse):
+            # Player 2 hits ENTER (Return)
+            elif event.key == pygame.K_RETURN:
+                if self.active_player is None:
+                    self.start_set_timer(2)
+                    self.game.table.handle_start_selection()
+
+
+        # --- MOUSE EVENTS (For UI and Cards) ---
+
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+
+            '''
+            # 1. Check if they clicked the PLUS button
+            if self.plus.collidepoint(mouse):
                 if self.active_player == 1:
                     self.p1_score += 1
                     self.check_winner()
                 elif self.active_player == 2:
                     self.p2_score += 1
                     self.check_winner()
+            '''
 
-            # 3. Check if they clicked the HINT button
-            elif self.hint_button.collidepoint(mouse):
+            # 2. Check if they clicked the HINT button
+            if self.hint_button.collidepoint(mouse):
                 hint_indices = self.game.table.give_hint()
                 if hint_indices:
                     self.game.table.hinted = hint_indices
 
-            # 4. Check if they clicked a CARD
+            # 3. Check if they clicked a CARD
             elif self.active_player is not None:
                 # Ask the board which card index the mouse is over
                 clicked_index = self.board.get_clicked_card_index(mouse)
@@ -203,39 +215,43 @@ class GameScreen:
         screen.blit(p2_score_text, (left_panel.x + 20, left_panel.y + 145))
 
         # BUTTON POSITIONS INSIDE PANEL
-        self.setbutton.center = (left_panel.centerx, left_panel.y + 225)
-        self.plus.center = (left_panel.centerx, left_panel.y + 300)
-        self.hint_button.center = (left_panel.centerx, left_panel.y + 360)
+        self.setbutton.center = (left_panel.centerx, left_panel.y + 250)
+        #self.plus.center = (left_panel.centerx, left_panel.y + 300)
+        self.hint_button.center = (left_panel.centerx, left_panel.y + 350)
 
         # BUTTON TEXTS
-        set_text = self.game.sub_font.render("SET", True, WHITE)
-        sethint_text1 = self.game.small_font.render('P1 press Space', True, WHITE)
-        sethint_text2 = self.game.small_font.render('P2 press Enter', True, WHITE)
-        plus_text = self.game.sub_font.render("PLUS", True, WHITE)
+        #set_text = self.game.sub_font.render("SET", True, WHITE)
+        sethint_text1 = self.game.sub_font.render('P1 press Space', True, WHITE)
+        sethint_text2 = self.game.sub_font.render('P2 press Enter', True, WHITE)
+        #plus_text = self.game.sub_font.render("PLUS", True, WHITE)
         hint_text = self.game.sub_font.render("HINT", True, WHITE)
 
         # DRAW BUTTONS
         # -------------------------
+
+        # Disabled the hover effect for the SET box so it acts just as a label
         pygame.draw.rect(
             screen,
-            LIGHT if self.setbutton.collidepoint(mouse) else DARK,
+            DARK,
             self.setbutton,
             border_radius=12
         )
-        screen.blit(set_text,
-                    set_text.get_rect(center=(self.setbutton.centerx, self.setbutton.centery - 15)))
+        #screen.blit(set_text,
+        #           set_text.get_rect(center=(self.setbutton.centerx, self.setbutton.centery - 15)))
         screen.blit(sethint_text1,
-                    sethint_text1.get_rect(center=(self.setbutton.centerx, self.setbutton.centery + 10)))
+                    sethint_text1.get_rect(center=(self.setbutton.centerx, self.setbutton.centery - 15)))
         screen.blit(sethint_text2,
-                    sethint_text2.get_rect(center=(self.setbutton.centerx, self.setbutton.centery + 30)))
+                    sethint_text2.get_rect(center=(self.setbutton.centerx, self.setbutton.centery + 15)))
 
+        '''
         pygame.draw.rect(
             screen,
             LIGHT if self.plus.collidepoint(mouse) else DARK,
             self.plus,
             border_radius=12
         )
-        screen.blit(plus_text, plus_text.get_rect(center=self.plus.center))
+        '''
+        #screen.blit(plus_text, plus_text.get_rect(center=self.plus.center))
 
         # Draw HINT button
         pygame.draw.rect(
