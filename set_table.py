@@ -5,7 +5,8 @@ import random
 class Table:
     def __init__(self):
         self.deck = cards
-        self.cards_on_table = []
+        self.num_cards_in_deck = 81
+        self.cards_on_table = [None for _ in range(12)]
         self.selected = []
         self.selection_mode = False
 
@@ -33,11 +34,21 @@ class Table:
         self.selected = []
 
     def pull3cards(self, selected):
-        for _ in range(3):
+        if self.num_cards_in_deck < 3:
+            ###### HANDLE END OF GAME #######
             pass
+        else:
+            for iter_num in range(3):
+                key, value = random.choice(list(cards.items()))
+                self.cards_on_table[selected[iter_num]] = value
+                del cards[key]
+                self.num_cards_in_deck -= 1
     def pull12cards(self):
-        for _ in range(12):
-            pass
+        for iter_num in range(12):
+            key, value = random.choice(list(cards.items()))
+            self.cards_on_table[iter_num] = value
+            del cards[key]
+            self.num_cards_in_deck -= 1
 
     # This function returns the indices that form a set from the table.
     def find_sets(self):
@@ -58,6 +69,12 @@ class Table:
             index_c1 += 1
 
         return set_indices
+
+    def __repr__(self):
+        message = str("")
+        for i in range(len(self.cards_on_table)):
+            message += self.cards_on_table[i].__repr__()
+        return message
 
 # Looks at the first 2 cards and finds the required card to form a set. Compares the third card to the required card,
 # if they are the same, returns True; otherwise, returns False.
@@ -102,11 +119,12 @@ def is_set(card1, card2, card3):
 
 
 #Debug
-myTable = Table()
-myTable.cards_on_table = [Card("erc1"), Card("erc2"), Card("erc3"), Card("src1"), Card("frc1"), Card("frc2")]
+#myTable = Table()
+#myTable.handle_start_game()
 
-print(myTable.find_sets())
-print(is_set(myTable.cards_on_table[0], myTable.cards_on_table[3], myTable.cards_on_table[4]))
+#print(myTable)
+
+#print(myTable.find_sets())
 
 
 
