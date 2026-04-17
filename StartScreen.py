@@ -6,7 +6,9 @@ pygame.init()
 
 class StartScreen:
     def __init__(self, game):
-        self.game = game
+        self.game = game #store the Game object inside this Startscreen
+                         #because it need Game, the main controller to run
+
         self.logo = pygame.image.load("set_cards.png").convert_alpha()
         # Rectangle of button
         self.play_button = pygame.Rect(470, 310, 140, 80)
@@ -14,11 +16,11 @@ class StartScreen:
         self.rules_button = pygame.Rect(0, 600, 140, 50)
 
     def handle_event(self, event):
-        mouse = pygame.mouse.get_pos()
+        mouse = pygame.mouse.get_pos() #get mouse position
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.MOUSEBUTTONDOWN: #if mouse was clicked
             # Click on Play --> go to GameScreen
-            if self.play_button.collidepoint(mouse):
+            if self.play_button.collidepoint(mouse): #if the mouse is clicked inside the play button area
                 self.game.current_screen = self.game.game_screen
             # Click on Quit --> shut down
             if self.quit_button.collidepoint(mouse):
@@ -38,6 +40,10 @@ class StartScreen:
 
         # Buttons: Play, Quit, Rules
         pygame.draw.rect(screen, LIGHT if self.play_button.collidepoint(mouse) else DARK, self.play_button)
+        #pygame.draw.rect(screen, color, rectangle) draw rectangle
+        #self.play_button.collidepoint(mouse) check hover
+        #LIGHT if inside else DARK mouse on button - light, else dark
+
         pygame.draw.rect(screen, LIGHT if self.quit_button.collidepoint(mouse) else DARK, self.quit_button)
         pygame.draw.rect(screen, LIGHT if self.rules_button.collidepoint(mouse) else DARK, self.rules_button)
 
