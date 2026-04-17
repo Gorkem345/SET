@@ -9,12 +9,10 @@ class GameScreen:
         self.game = game #game here is the Game object, so self.game = Game()
         self.board = Display_board(game, Table)
         #Player interface
-        self.p1setbutton = pygame.Rect(200, 80, 100, 60)
-        self.p2setbutton = pygame.Rect(200, 180, 100, 60)
+        self.setbutton = pygame.Rect(200, 80, 198, 80)
 
         #testing button
-        self.plus = pygame.Rect(500, 80, 100, 60)
-        self.minus = pygame.Rect(500, 180, 100, 60)
+        self.plus = pygame.Rect(500, 80, 100, 40)
 
         # -----------------------------
         # Score system
@@ -31,6 +29,18 @@ class GameScreen:
 
         #Winner: Score > 30
         self.winner = None
+
+
+        #load table background
+            #I only want the center part of the image
+        img = pygame.image.load("D:/Personal/Gitlab_projects/SET\images/table.png").convert()
+        img_w, img_h = img.get_size()
+        screen_w, screen_h = 1080, 720
+        x = (img_w - screen_w) // 2
+        y = (img_h - screen_h) // 2
+
+        self.background = img.subsurface((x, y, screen_w, screen_h))
+
 
     def start_set_timer(self, player):
         """Start the 15-second answer period for one player."""
@@ -97,14 +107,9 @@ class GameScreen:
         mouse = pygame.mouse.get_pos()  # get mouse position
 
         if event.type == pygame.MOUSEBUTTONDOWN:  # if mouse was clicked
-            if self.p1setbutton.collidepoint(mouse):  # if the mouse is clicked inside the play button area
+            if self.setbutton.collidepoint(mouse):  # if the mouse is clicked inside the play button area
                 if self.active_player is None: #other SET button cannot be activated
                     self.start_set_timer(1)
-
-            # Click on Quit --> shut down
-            elif self.p2setbutton.collidepoint(mouse):
-                if self.active_player is None:
-                    self.start_set_timer(2)
 
             # PLUS button
             elif self.plus.collidepoint(mouse):
@@ -116,20 +121,11 @@ class GameScreen:
                     self.p2_score += 1
                     self.check_winner()
 
-            # MINUS button
-            elif self.minus.collidepoint(mouse):
-                if self.active_player == 1:
-                    self.p1_score -= 1
-                    self.check_winner()
-
-                elif self.active_player == 2:
-                    self.p2_score -= 1
-                    self.check_winner()
-
-
-    def draw(self, screen): #screen here is the self.screen from Game
+    def draw(self, screen):
         mouse = pygame.mouse.get_pos()
-        screen.fill(BG)
+
+        # show background
+        screen.blit(self.background, (0, 0))
 
         #Display the board
         self.board.draw(screen)
@@ -137,76 +133,92 @@ class GameScreen:
         # Check timer every frame
         time_left = self.get_time_left()
 
-        # Scoreboard
-        p1_score_text = self.game.sub_font.render(f"P1 Score: {self.p1_score}",
+
+        # LEFT PANEL
+        left_panel = pygame.Rect(20, 20, 280, 500) #topleft x, y, width, height
+
+        # panel background
+        pygame.draw.rect(screen, (44, 44, 62), left_panel, border_radius=12)
+        #where to draw: screen, what color, recantagle: left_panel,
+        #border_radius, Instead of sharp 90° corners, the rectangle gets rounded corners
+
+        # panel border
+        pygame.draw.rect(screen, WHITE, left_panel, 2, border_radius=12)
+
+
+        # TEXTS
+        score_text = self.game.font.render("Score:", True, WHITE)
+        p1_score_text = self.game.sub_font.render(f"Player 1:   {self.p1_score}",
                                                   True, WHITE)
-        p2_score_text = self.game.sub_font.render(f"P2 Score: {self.p2_score}",
+
+        p2_score_text = self.game.sub_font.render(f"Player 2:   {self.p2_score}",
                                                   True, WHITE)
 
-        screen.blit(p1_score_text, (100, 140))
-        screen.blit(p2_score_text, (100, 240))
 
-        #p1, p2 label position
-        p1_text = self.game.sub_font.render("Player 1", True, WHITE)
-        p1_rect = p1_text.get_rect(topleft=(100, 100))
-        screen.blit(p1_text, p1_rect)
-        p2_text = self.game.sub_font.render("Player 2", True, WHITE)
-        p2_rect = p2_text.get_rect(topleft=(100, 200))
-        screen.blit(p2_text, p2_rect)
+        #change from abosolute position to relative position of the panel
 
-        #p1, p2 set button text
-        p1set_text = self.game.sub_font.render("SET", True, WHITE)
-        p2set_text = self.game.sub_font.render("SET", True, WHITE)
+        screen.blit(score_text, (left_panel.x + 20, left_panel.y + 45))
+        screen.blit(p1_score_text, (left_panel.x + 20, left_panel.y + 105))
+        screen.blit(p2_score_text, (left_panel.x + 20, left_panel.y + 145))
 
-        #Place p1, p2 set button
-        pygame.draw.rect(screen, LIGHT if self.p1setbutton.collidepoint(
-            mouse) else DARK, self.p1setbutton)
-        screen.blit(p1set_text, p1set_text.get_rect(
-            center=(self.p1setbutton.centerx, self.p1setbutton.centery)))
-            #p1set_text.get_rect(), create a rectangle for that text, position it use center = (x, y)
-            #self.p1setbutton.centerx,  horizontally: center of the button
+        # BUTTON POSITIONS INSIDE PANEL
+        self.setbutton.center = (left_panel.centerx, left_panel.y + 225)
+        self.plus.center = (left_panel.centerx, left_panel.y + 300)
 
-        pygame.draw.rect(screen, LIGHT if self.p2setbutton.collidepoint(
-            mouse) else DARK, self.p2setbutton)
-        screen.blit(p2set_text, p2set_text.get_rect(
-            center=(self.p2setbutton.centerx, self.p2setbutton.centery)))
-
-        # testing button
+        # BUTTON TEXTS
+        set_text = self.game.sub_font.render("SET", True, WHITE)
+        sethint_text1 = self.game.small_font.render('P1 press Space', True, WHITE)
+        sethint_text2 = self.game.small_font.render('P2 press Enter', True, WHITE)
         plus_text = self.game.sub_font.render("PLUS", True, WHITE)
-        minus_text = self.game.sub_font.render("MINUS", True, WHITE)
-        pygame.draw.rect(screen, LIGHT if self.plus.collidepoint(
-            mouse) else DARK, self.plus)
-        screen.blit(plus_text, plus_text.get_rect(
-            center=(self.plus.centerx, self.plus.centery)))
-        pygame.draw.rect(screen, LIGHT if self.minus.collidepoint(
-            mouse) else DARK, self.minus)
-        screen.blit(minus_text, minus_text.get_rect(
-            center=(self.minus.centerx, self.minus.centery)))
 
-# -----------------------------
-        # Show whose turn it is
-        # -----------------------------
+        # DRAW BUTTONS
+        # -------------------------
+        pygame.draw.rect(
+            screen,
+            LIGHT if self.setbutton.collidepoint(mouse) else DARK,
+            self.setbutton,
+            border_radius=12
+        )
+        screen.blit(set_text,
+                    set_text.get_rect(center=(self.setbutton.centerx, self.setbutton.centery - 15)))
+        screen.blit(sethint_text1,
+                    sethint_text1.get_rect(center=(self.setbutton.centerx, self.setbutton.centery + 10)))
+        screen.blit(sethint_text2,
+                    sethint_text2.get_rect(center=(self.setbutton.centerx, self.setbutton.centery + 30)))
+
+        pygame.draw.rect(
+            screen,
+            LIGHT if self.plus.collidepoint(mouse) else DARK,
+            self.plus,
+            border_radius=12
+        )
+        screen.blit(plus_text, plus_text.get_rect(center=self.plus.center))
+
+
+        # Timer / message panel
+        message_panel = pygame.Rect(20, 540, 280, 160)  # topleft x, y, width, height
+        pygame.draw.rect(screen, (44, 44, 62), message_panel, border_radius=12)
+        pygame.draw.rect(screen, WHITE, message_panel, 2, border_radius=12)
+
         if self.active_player is not None:
             turn_text = self.game.sub_font.render(
-                f"Player {self.active_player} is answering",
-                True,
-                WHITE
+                f"Player {self.active_player} is answering", True, WHITE
             )
-            screen.blit(turn_text, (700, 100))
-
             timer_text = self.game.sub_font.render(
-                f"Time left: {time_left}s",
-                True,
-                WHITE
+                f"Time left: {time_left}s", True, WHITE
             )
-            screen.blit(timer_text, (700, 150))
+            screen.blit(turn_text, (message_panel.x + 20, message_panel.y + 20))
+            screen.blit(timer_text, (message_panel.x + 20, message_panel.y + 60))
         else:
-            wait_text = self.game.sub_font.render(
-                "No active SET call",
-                True,
-                WHITE
-            )
-            screen.blit(wait_text, (700, 100))
+            wait_text = self.game.sub_font.render("Press set when ready", True, WHITE)
+            screen.blit(wait_text, (message_panel.x + 20, message_panel.y + 20))
+
+            timer_text = self.game.sub_font.render(f"Time left: {time_left}s", True, WHITE)
+            screen.blit(timer_text, (message_panel.x + 20, message_panel.y + 60))
+
+
+
+
 
 
 

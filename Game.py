@@ -16,6 +16,7 @@ class Game:
         self.font = pygame.font.SysFont("Corbel", 40)
         self.sub_font = pygame.font.SysFont("Corbel", 25)
         self.title_font = pygame.font.SysFont("Corbel", 60)
+        self.small_font = pygame.font.SysFont("Corbel", 18)
 
         self.display_card = Display_card()
         self.table = Table()
