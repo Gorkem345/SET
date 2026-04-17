@@ -33,7 +33,7 @@ class GameScreen:
 
         #load table background
             #I only want the center part of the image
-        img = pygame.image.load("D:/Personal/Gitlab_projects/SET\images/table.png").convert()
+        img = pygame.image.load("images/table.png").convert()
         img_w, img_h = img.get_size()
         screen_w, screen_h = 1080, 720
         x = (img_w - screen_w) // 2
