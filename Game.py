@@ -50,6 +50,7 @@ class Game:
         self.winner = ""
         self.p1_score = 0
         self.p2_score = 0
+        self.comp_score = 0
 
     def run(self):
         while self.running:
