@@ -1,5 +1,4 @@
-from image_dictionary import cards
-from image_dictionary import Card
+from utils.image_dictionary import cards
 import random
 import copy
 
@@ -26,11 +25,14 @@ class Table:
             if self.cards_on_table[index] != None and index not in self.selected:
                 self.selected.append(index)
                 if len(self.selected) == 3:
-                    self.handle_selection()
+                    return self.handle_selection()
+        return None #No complete selection made yet
 
     def handle_selection(self): #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        set_formed = False
         ###### STOP THE TIMER
         if is_set(self.cards_on_table[self.selected[0]], self.cards_on_table[self.selected[1]], self.cards_on_table[self.selected[2]]):
+            set_formed = True
             if self.num_cards_in_deck > 0:
                 self.pull3cards()
             else:
@@ -46,6 +48,7 @@ class Table:
             pass
         self.selection_mode = False
         self.selected = []
+        return set_formed
 
     def pull3cards(self): #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         if self.num_cards_in_deck < 3 and self.find_sets() == []:
@@ -102,6 +105,14 @@ class Table:
     def handle_start_selection(self):
         self.selection_mode = True
         self.selected = []
+
+    def give_hint(self):
+        sets = self.find_sets()
+        if sets != []:
+            hint = random.choice(sets)
+        else:
+            hint = False
+        return hint
 
     def __repr__(self):
         message = str("")

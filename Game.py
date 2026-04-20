@@ -1,12 +1,13 @@
 import pygame
 import sys
-from StartScreen import StartScreen
-from GameScreen import GameScreen
-from Rules import RulesScreen
-from WinnerScreen import WinnerScreen
-from TableDisplay import Display_card
-from set_table import Table
-from constants import WHITE, LIGHT, DARK, BG
+from screens.StartScreen import StartScreen
+from screens.GameScreen import GameScreen
+from screens.Rules import RulesScreen
+from screens.WinnerScreen import WinnerScreen
+from screens.TableDisplay import Display_card
+from utils.set_table import Table
+from screens.Singleplayer import SingleplayerScreen
+
 
 class Game:
     def __init__(self):
@@ -30,10 +31,9 @@ class Game:
                                               #so now self (Startscreen).game = game (Game object)
                                               #save the Game object inside the Startscreen
 
+        self.singleplayer_screen = SingleplayerScreen(self)
         self.game_screen = GameScreen(self)
         self.rules_screen = RulesScreen(self)
-
-        #add winner page
         self.winner_screen = WinnerScreen(self)
 
 
