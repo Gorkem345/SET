@@ -24,14 +24,16 @@ class StartScreen:
             if self.singleplayer_button.collidepoint(mouse):  # if the mouse is clicked inside the play button area
                 self.game.current_screen = self.game.singleplayer_screen
             # Click on Play --> go to GameScreen
-            if self.play_button.collidepoint(mouse): #if the mouse is clicked inside the play button area
+            elif self.play_button.collidepoint(mouse): #if the mouse is clicked inside the play button area
+                self.game.game_screen.reset_game_screen() #connect to Game, use game_screen object to connect Gamescreen,
+                                                          # call the reset game screen function
                 self.game.current_screen = self.game.game_screen
             # Click on Quit --> shut down
-            if self.quit_button.collidepoint(mouse):
+            elif self.quit_button.collidepoint(mouse):
                 pygame.quit()
                 sys.exit()
             # Click on Rules --> go to RulesScreen
-            if self.rules_button.collidepoint(mouse):
+            elif self.rules_button.collidepoint(mouse):
                 self.game.current_screen = self.game.rules_screen
 
     def draw(self, screen):
