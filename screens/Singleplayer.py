@@ -95,7 +95,7 @@ class SingleplayerScreen:
         """Start the 15-second answer period for one player."""
         self.active_player = player
         self.set_start_time = pygame.time.get_ticks()  # it is the time pass when the game start until you click SET button
-        # a = f'set_start_time: {self.set_start_time}'
+        # a = f'set_start_time: {self.set_start_time}' #Debug
         # print(a)
 
     def clear_set_timer(self):
@@ -145,6 +145,7 @@ class SingleplayerScreen:
                 self.game.winner = "Player 1 and Computer!"
 
             self.game.p1_score = self.p1_score
+            self.game.comp_score = self.comp_score
             self.game.winner_screen.prev_screen = self.game.singleplayer_screen
             self.game.current_screen = self.game.winner_screen
 
@@ -161,7 +162,7 @@ class SingleplayerScreen:
             delay = random.randint(18000, 30000)
             self.comp_target_time = pygame.time.get_ticks() + delay
         if self.difficulty == "Normal":
-            delay = random.randint(10000, 20000)
+            delay = random.randint(12000, 20000)
             self.comp_target_time = pygame.time.get_ticks() + delay
         if self.difficulty == "Hard":
             delay = random.randint(8000, 12000)
@@ -200,7 +201,7 @@ class SingleplayerScreen:
             return
 
         # --- STATE 2: The computer is "thinking" ---
-        if self.active_player is None and current_time >= self.comp_target_time:
+        if self.active_player is None and current_time >= self.comp_target_time and not self.game.table.waiting_for_replace:
 
             hint_indices = self.game.table.give_set()
 
