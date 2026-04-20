@@ -92,30 +92,32 @@ class PreStartScreen:
         p2_text = self.game.sub_font.render("Player 2 Call SET", True, WHITE)
         screen.blit(p2_text, p2_text.get_rect(center=(770, 270)))
 
-        # --- DIFFICULTY SECTION (BOTTOM) ---
-        diff_title = self.game.font.render("Choose Difficulty", True, WHITE)
-        screen.blit(diff_title, diff_title.get_rect(center=(540, 430)))
+        if self.next_screen == self.game.singleplayer_screen:
+            # --- DIFFICULTY SECTION (BOTTOM) ---
+            diff_title = self.game.font.render("Choose Difficulty", True, WHITE)
+            screen.blit(diff_title, diff_title.get_rect(center=(540, 430)))
 
         # Helper function to draw difficulty buttons
         def draw_diff_button(rect, text_str, is_selected):
-            # If selected, make it LIGHT. If hovered, make it slightly lighter DARK. Else DARK.
-            if is_selected:
-                color = LIGHT
-            elif rect.collidepoint(mouse):
-                color = (80, 80, 100)  # subtle hover color
-            else:
-                color = DARK
+            if self.next_screen == self.game.singleplayer_screen:
+                # If selected, make it LIGHT. If hovered, make it slightly lighter DARK. Else DARK.
+                if is_selected:
+                    color = LIGHT
+                elif rect.collidepoint(mouse):
+                    color = (80, 80, 100)  # subtle hover color
+                else:
+                    color = DARK
 
-            pygame.draw.rect(screen, color, rect, border_radius=12)
+                pygame.draw.rect(screen, color, rect, border_radius=12)
 
-            # Draw a bright border if selected
-            if is_selected:
-                pygame.draw.rect(screen, (0, 255, 255), rect, width=3, border_radius=12)
-            else:
-                pygame.draw.rect(screen, WHITE, rect, width=2, border_radius=12)
+                # Draw a bright border if selected
+                if is_selected:
+                    pygame.draw.rect(screen, (0, 255, 255), rect, width=3, border_radius=12)
+                else:
+                    pygame.draw.rect(screen, WHITE, rect, width=2, border_radius=12)
 
-            text_surf = self.game.sub_font.render(text_str, True, WHITE)
-            screen.blit(text_surf, text_surf.get_rect(center=rect.center))
+                text_surf = self.game.sub_font.render(text_str, True, WHITE)
+                screen.blit(text_surf, text_surf.get_rect(center=rect.center))
 
         # Draw the 3 buttons
         draw_diff_button(self.easy_button, "Easy", self.selected_difficulty == "Easy")
