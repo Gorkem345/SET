@@ -132,11 +132,6 @@ class SingleplayerScreen:
         return remaining // 1000 + 1
 
     def check_winner(self):
-        # GameScreen knows Game
-        # WinnerScreen knows Game
-        # WinnerScreen does not know Gamescreen
-        # in this case you need self.game (Game object), store the score and winner
-        # as an attribute of Game object so that it can access to WinnerScreen
 
         if not self.game.table.find_sets():
             if self.p1_score > self.comp_score:
@@ -163,13 +158,13 @@ class SingleplayerScreen:
         """Give the computer a random number of seconds to 'think'."""
         # Computer takes between 8 and 30 seconds depending on difficulty level
         if self.difficulty == "Easy":
-            delay = random.randint(15000, 30000)
+            delay = random.randint(18000, 30000)
             self.comp_target_time = pygame.time.get_ticks() + delay
         if self.difficulty == "Normal":
             delay = random.randint(10000, 20000)
             self.comp_target_time = pygame.time.get_ticks() + delay
         if self.difficulty == "Hard":
-            delay = random.randint(8000, 15000)
+            delay = random.randint(8000, 12000)
             self.comp_target_time = pygame.time.get_ticks() + delay
 
     def update_computer(self):
@@ -225,81 +220,84 @@ class SingleplayerScreen:
                 self.comp_target_time = current_time + 1000
 
     def handle_event(self, event):
-        mouse = pygame.mouse.get_pos()  # get mouse position
+        if not self.game.table.waiting_for_replace:
+            mouse = pygame.mouse.get_pos()  # get mouse position
 
-        # --- KEYBOARD EVENTS (For SET calls) ---
-        if event.type == pygame.KEYDOWN:
-            # Player 1 hits SPACEBAR
-            if event.key == pygame.K_SPACE:
-                if self.active_player is None:
-                    self.start_set_timer(1)
-                    self.game.table.handle_start_selection()
+            # --- KEYBOARD EVENTS (For SET calls) ---
+            if event.type == pygame.KEYDOWN:
+                # Player 1 hits SPACEBAR
+                if event.key == pygame.K_SPACE:
+                    if self.active_player is None:
+                        self.start_set_timer(1)
+                        self.game.table.handle_start_selection()
 
 
-        # --- MOUSE EVENTS (For UI and Cards) ---
+            # --- MOUSE EVENTS (For UI and Cards) ---
 
-        elif event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN:
 
-            if event.button == 1:
-                # 2. Check if they clicked the HINT button
-                if self.hint_button.collidepoint(mouse):
-                    hint_indices = self.game.table.give_hint()
-                    if hint_indices:
-                        self.game.table.hinted = hint_indices
+                if event.button == 1:
+                    # 2. Check if they clicked the HINT button
+                    if self.hint_button.collidepoint(mouse):
+                        hint_indices = self.game.table.give_hint()
+                        if hint_indices:
+                            self.game.table.hinted = hint_indices
 
-                # --- NEW: Restart Button ---
-                elif self.restart_button.collidepoint(mouse):
-                    self.reset_game_screen()
+                    # --- NEW: Restart Button ---
+                    elif self.restart_button.collidepoint(mouse):
+                        self.reset_game_screen()
 
-                # --- NEW: Menu Button ---
-                elif self.menu_button.collidepoint(mouse):
-                    self.game.current_screen = self.game.start_screen
-                    self.reset_game_screen()
+                    # --- NEW: Menu Button ---
+                    elif self.menu_button.collidepoint(mouse):
+                        self.game.current_screen = self.game.start_screen
+                        self.reset_game_screen()
 
-                # 3. Check if they clicked a CARD
-                elif self.active_player is not None:
-                    # Ask the board which card index the mouse is over
-                    clicked_index = self.board.get_clicked_card_index(mouse)
+                    # 3. Check if they clicked a CARD
+                    elif self.active_player is not None:
+                        # Ask the board which card index the mouse is over
+                        clicked_index = self.board.get_clicked_card_index(mouse)
 
-                    if clicked_index is not None and self.active_player != 2:
-                        # Pass the click to your Table logic
-                        forms_set = self.game.table.handle_click(clicked_index)
+                        if clicked_index is not None and self.active_player != 2:
+                            # Pass the click to your Table logic
+                            forms_set = self.game.table.handle_click(clicked_index)
 
-                        # If handle_click finished processing 3 cards, selection_mode will turn False
-                        if not self.game.table.selection_mode:
-                            # (Ideally, you check if they actually got it right here to award points)
-                            if forms_set is not None:
-                                if forms_set:
-                                    if self.correct_sound:
-                                        self.correct_sound.play()
-                                    if self.active_player == 1:
-                                        self.p1_score += 1
-                                        self.check_winner()
-                                    elif self.active_player == 2:
-                                        self.comp_score += 1
-                                        self.check_winner()
-                                else:
-                                    if self.wrong_sound:
-                                        self.wrong_sound.play()
-                                    if self.active_player == 1:
-                                        self.p1_score -= 1
-                                    elif self.active_player == 2:
-                                        self.comp_score -= 1
-                            # Stop the timer and end the turn
-                            self.clear_set_timer()
-                            # Clear hints
-                            self.game.table.hinted = []
+                            # If handle_click finished processing 3 cards, selection_mode will turn False
+                            if not self.game.table.selection_mode:
+                                # (Ideally, you check if they actually got it right here to award points)
+                                if forms_set is not None:
+                                    if forms_set:
+                                        if self.correct_sound:
+                                            self.correct_sound.play()
+                                        if self.active_player == 1:
+                                            self.p1_score += 1
+                                            self.check_winner()
+                                        elif self.active_player == 2:
+                                            self.comp_score += 1
+                                            self.check_winner()
+                                    else:
+                                        if self.wrong_sound:
+                                            self.wrong_sound.play()
+                                        if self.active_player == 1:
+                                            self.p1_score -= 1
+                                        elif self.active_player == 2:
+                                            self.comp_score -= 1
+                                # Stop the timer and end the turn
+                                self.clear_set_timer()
+                                # Clear hints
+                                self.game.table.hinted = []
 
-            elif event.button == 3:
-                if self.active_player is not None:
-                    clicked_index = self.board.get_clicked_card_index(mouse)
+                elif event.button == 3:
+                    if self.active_player is not None:
+                        clicked_index = self.board.get_clicked_card_index(mouse)
 
-                    if clicked_index is not None and self.active_player != 2:
-                        self.game.table.handle_right_click(clicked_index)
+                        if clicked_index is not None and self.active_player != 2:
+                            self.game.table.handle_right_click(clicked_index)
 
 
     def draw(self, screen):
         mouse = pygame.mouse.get_pos()
+
+        self.check_winner()
 
         self.update_computer()
 
