@@ -13,6 +13,8 @@ class SingleplayerScreen:
         # Player interface
         self.setbutton = pygame.Rect(200, 80, 198, 80)
 
+        self.difficulty = "Normal"
+
         # testing button
         #self.plus = pygame.Rect(500, 80, 100, 40)
 
@@ -154,9 +156,16 @@ class SingleplayerScreen:
 
     def reset_computer_timer(self):
         """Give the computer a random number of seconds to 'think'."""
-        # Computer takes between 8 and 20 seconds (adjust these numbers to change difficulty!)
-        delay = random.randint(8000, 20000)
-        self.comp_target_time = pygame.time.get_ticks() + delay
+        # Computer takes between 8 and 30 seconds depending on difficulty level
+        if self.difficulty == "Easy":
+            delay = random.randint(15000, 30000)
+            self.comp_target_time = pygame.time.get_ticks() + delay
+        if self.difficulty == "Normal":
+            delay = random.randint(10000, 20000)
+            self.comp_target_time = pygame.time.get_ticks() + delay
+        if self.difficulty == "Hard":
+            delay = random.randint(8000, 15000)
+            self.comp_target_time = pygame.time.get_ticks() + delay
 
     def update_computer(self):
         current_time = pygame.time.get_ticks()
@@ -193,7 +202,7 @@ class SingleplayerScreen:
         # --- STATE 2: The computer is "thinking" ---
         if self.active_player is None and current_time >= self.comp_target_time:
 
-            hint_indices = self.game.table.give_hint()
+            hint_indices = self.game.table.give_set()
 
             if hint_indices:
                 # 1. Claim the turn! (2 represents the computer)

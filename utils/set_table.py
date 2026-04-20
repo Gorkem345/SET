@@ -8,6 +8,7 @@ class Table:
         self.deck = {}
         self.num_cards_in_deck = 81
         self.cards_on_table = [None for _ in range(12)]
+        self.hint = []
         self.selected = []
         self.selection_mode = False
         self.game_end = False
@@ -106,13 +107,23 @@ class Table:
         self.selection_mode = True
         self.selected = []
 
+    # Selects two cards of a set to display as hint
     def give_hint(self):
         sets = self.find_sets()
         if sets != []:
-            hint = random.choice(sets)
+            set = random.choice(sets)
+            hint = random.sample(set, 2)
         else:
             hint = False
         return hint
+    # For the computer to find a set
+    def give_set(self):
+        sets = self.find_sets()
+        if sets != []:
+            set = random.choice(sets)
+        else:
+            set = False
+        return set
 
     def __repr__(self):
         message = str("")
