@@ -257,7 +257,7 @@ class SingleplayerScreen:
                 # Ask the board which card index the mouse is over
                 clicked_index = self.board.get_clicked_card_index(mouse)
 
-                if clicked_index is not None and self.active_player != 2:
+                if event.button == 1 and clicked_index is not None and self.active_player != 2:
                     # Pass the click to your Table logic
                     forms_set = self.game.table.handle_click(clicked_index)
 
@@ -285,6 +285,10 @@ class SingleplayerScreen:
                         self.clear_set_timer()
                         # Clear hints
                         self.game.table.hinted = []
+
+                elif event.button == 3 and clicked_index is not None and self.active_player != 2:
+                    self.game.table.handle_right_click(clicked_index)
+
 
     def draw(self, screen):
         mouse = pygame.mouse.get_pos()
