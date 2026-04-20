@@ -42,10 +42,6 @@ class GameScreen:
         self.status_message = "Press set when ready"
         self.message_end_time = 0
 
-
-
-
-
         # Background
         img = pygame.image.load("images/table.png").convert()
         img_w, img_h = img.get_size()
