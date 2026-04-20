@@ -13,6 +13,8 @@ class SingleplayerScreen:
         # Player interface
         self.setbutton = pygame.Rect(200, 80, 198, 80)
 
+        self.difficulty = "Normal"
+
         # testing button
         #self.plus = pygame.Rect(500, 80, 100, 40)
 
@@ -39,6 +41,9 @@ class SingleplayerScreen:
         self.comp_target_time = 0
         self.reset_computer_timer()
 
+        self.comp_clicks_pending = []  # The list of cards it needs to click
+        self.comp_next_click_time = 0  # When it is allowed to click the next card
+
         # load table background
         # I only want the center part of the image
         img = pygame.image.load("images/table.png").convert()
@@ -48,6 +53,39 @@ class SingleplayerScreen:
         y = (img_h - screen_h) // 2
 
         self.background = img.subsurface((x, y, screen_w, screen_h))
+
+        try:
+            self.correct_sound = pygame.mixer.Sound("sounds/correct.wav")
+            self.wrong_sound = pygame.mixer.Sound("sounds/wrong.wav")
+
+            # Optional: adjust volume (0.0 to 1.0)
+            self.correct_sound.set_volume(0.4)
+            self.wrong_sound.set_volume(0.5)
+        except Exception as e:
+            print(f"Could not load sounds: {e}")
+            self.correct_sound = None
+            self.wrong_sound = None
+
+    def reset_game_screen(self):
+        """Resets all scores, timers, and the computer's brain for a fresh game."""
+        self.p1_score = 0
+        self.comp_score = 0
+        self.winner = None
+        self.clear_set_timer()
+
+        # Reset the 5-minute game timer (if you are using it here)
+        self.game_start_time = pygame.time.get_ticks()
+
+        # Reset the table
+        self.game.table.selection_mode = False
+        self.game.table.selected = []
+        self.game.table.hinted = []
+        self.game.table.handle_start_game()
+
+        # Completely Reset the Computer
+        self.reset_computer_timer()  # Give it a fresh 8-20 seconds
+        self.comp_clicks_pending = []  # Clear any queued clicks
+        self.computer_showing_set = False  # Stop it from showing old hints
 
     def start_set_timer(self, player):
         """Start the 15-second answer period for one player."""
@@ -82,7 +120,7 @@ class SingleplayerScreen:
             if self.active_player == 1:
                 self.p1_score -= 1
             elif self.active_player == 2:
-                self.p2_score -= 1
+                self.comp_score -= 1
 
             self.clear_set_timer()
             return 0
@@ -108,7 +146,6 @@ class SingleplayerScreen:
                 self.game.winner = "Player 1 and Computer!"
 
             self.game.p1_score = self.p1_score
-            self.game.p2_score = self.comp_score
             self.game.current_screen = self.game.winner_screen
 
             # reset timer, score and the game
@@ -119,33 +156,67 @@ class SingleplayerScreen:
 
     def reset_computer_timer(self):
         """Give the computer a random number of seconds to 'think'."""
-        # Computer takes between 8 and 20 seconds (adjust these numbers to change difficulty!)
-        delay = random.randint(8000, 20000)
-        self.comp_target_time = pygame.time.get_ticks() + delay
+        # Computer takes between 8 and 30 seconds depending on difficulty level
+        if self.difficulty == "Easy":
+            delay = random.randint(15000, 30000)
+            self.comp_target_time = pygame.time.get_ticks() + delay
+        if self.difficulty == "Normal":
+            delay = random.randint(10000, 20000)
+            self.comp_target_time = pygame.time.get_ticks() + delay
+        if self.difficulty == "Hard":
+            delay = random.randint(8000, 15000)
+            self.comp_target_time = pygame.time.get_ticks() + delay
 
     def update_computer(self):
-        """Check if it's time for the computer to steal the set."""
         current_time = pygame.time.get_ticks()
 
-        # Only act if the player hasn't pressed SPACE, and the time is up!
+        # --- STATE 1: The computer is currently in the middle of clicking its 3 cards ---
+        if len(self.comp_clicks_pending) > 0:
+
+            # Is it time to click the next card?
+            if current_time >= self.comp_next_click_time:
+
+                # Take the first card out of the queue and click it!
+                next_card = self.comp_clicks_pending.pop(0)
+                forms_set = self.game.table.handle_click(next_card)
+
+                # Did we just click the 3rd and final card?
+                if not self.game.table.selection_mode:
+                    if forms_set:
+                        if hasattr(self, 'correct_sound') and self.correct_sound:
+                            self.correct_sound.play()
+                        self.comp_score += 1
+                        self.check_winner()
+
+                    # Turn is over, reset everything
+                    self.clear_set_timer()
+                    self.game.table.hinted = []
+
+                else:
+                    # We clicked card 1 or 2. Set the timer to wait 0.6 seconds before the next click!
+                    self.comp_next_click_time = current_time + 1000
+
+                    # We return here so the computer doesn't try to "think" while it's busy clicking
+            return
+
+        # --- STATE 2: The computer is "thinking" ---
         if self.active_player is None and current_time >= self.comp_target_time:
 
-            hint_indices = self.game.table.give_hint()
+            hint_indices = self.game.table.give_set()
 
-            if hint_indices:  # If there is actually a set on the board
-                # Simulate the computer instantly clicking the 3 cards
-                self.game.table.selection_mode = True
-                self.game.table.selected = []
-                self.game.table.handle_click(hint_indices[0])
-                self.game.table.handle_click(hint_indices[1])
-                self.game.table.handle_click(hint_indices[2])
+            if hint_indices:
+                # 1. Claim the turn! (2 represents the computer)
+                self.start_set_timer(2)
+                self.game.table.handle_start_selection()
 
-                self.comp_score += 1
-                self.check_winner()
-                self.reset_computer_timer()
+                # 2. Put the 3 cards into the to-do list
+                self.comp_clicks_pending = [hint_indices[0], hint_indices[1], hint_indices[2]]
+
+                # 3. Wait 0.6 seconds before making the very first click
+                self.comp_next_click_time = current_time + 600
+
             else:
-                # If the board is stuck with no sets, push the timer back a tiny bit
-                # so it doesn't get stuck in a loop while the board redistributes.
+                # No sets on the board, check again in 1 second
                 self.comp_target_time = current_time + 1000
 
     def handle_event(self, event):
@@ -171,7 +242,7 @@ class SingleplayerScreen:
                     self.p1_score += 1
                     self.check_winner()
                 elif self.active_player == 2:
-                    self.p2_score += 1
+                    self.comp_score += 1
                     self.check_winner()
             '''
 
@@ -186,7 +257,7 @@ class SingleplayerScreen:
                 # Ask the board which card index the mouse is over
                 clicked_index = self.board.get_clicked_card_index(mouse)
 
-                if clicked_index is not None:
+                if clicked_index is not None and self.active_player != 2:
                     # Pass the click to your Table logic
                     forms_set = self.game.table.handle_click(clicked_index)
 
@@ -195,17 +266,21 @@ class SingleplayerScreen:
                         # (Ideally, you check if they actually got it right here to award points)
                         if forms_set is not None:
                             if forms_set:
+                                if self.correct_sound:
+                                    self.correct_sound.play()
                                 if self.active_player == 1:
                                     self.p1_score += 1
                                     self.check_winner()
                                 elif self.active_player == 2:
-                                    self.p2_score += 1
+                                    self.comp_score += 1
                                     self.check_winner()
                             else:
+                                if self.wrong_sound:
+                                    self.wrong_sound.play()
                                 if self.active_player == 1:
                                     self.p1_score -= 1
                                 elif self.active_player == 2:
-                                    self.p2_score -= 1
+                                    self.comp_score -= 1
                         # Stop the timer and end the turn
                         self.clear_set_timer()
                         # Clear hints
@@ -241,14 +316,14 @@ class SingleplayerScreen:
         p1_score_text = self.game.sub_font.render(f"Player 1:   {self.p1_score}",
                                                   True, WHITE)
 
-        p2_score_text = self.game.sub_font.render(f"Computer:   {self.comp_score}",
+        comp_score_text = self.game.sub_font.render(f"Computer:   {self.comp_score}",
                                                   True, WHITE)
 
         # change from absolute position to relative position of the panel
 
         screen.blit(score_text, (left_panel.x + 20, left_panel.y + 45))
         screen.blit(p1_score_text, (left_panel.x + 20, left_panel.y + 105))
-        screen.blit(p2_score_text, (left_panel.x + 20, left_panel.y + 145))
+        screen.blit(comp_score_text, (left_panel.x + 20, left_panel.y + 145))
 
         # BUTTON POSITIONS INSIDE PANEL
         self.setbutton.center = (left_panel.centerx, left_panel.y + 250)
