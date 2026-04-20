@@ -80,8 +80,12 @@ class PreStartScreen:
 
         mouse_text = self.game.sub_font.render("Left Click", True, WHITE)
         screen.blit(mouse_text, mouse_text.get_rect(center=(540, 310)))
-        select_text = self.game.sub_font.render("Select Cards", True, WHITE)
+        select_text = self.game.sub_font.render("to Select Cards", True, WHITE)
         screen.blit(select_text, select_text.get_rect(center=(540, 340)))
+        mouse_text2 = self.game.sub_font.render("Right Click", True, WHITE)
+        screen.blit(mouse_text2, mouse_text2.get_rect(center=(540, 390)))
+        unselect_text = self.game.sub_font.render("to Unselect Cards", True, WHITE)
+        screen.blit(unselect_text, unselect_text.get_rect(center=(540, 420)))
 
         # 3. ENTER KEY (Player 2)
         pygame.draw.rect(screen, WHITE, (690, 180, 160, 60), border_radius=8)
