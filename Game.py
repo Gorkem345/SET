@@ -13,7 +13,7 @@ from screens.PreStartScreen import PreStartScreen
 
 class Game:
     def __init__(self):
-        self.screen = pygame.display.set_mode((1080, 720))
+        self.screen = pygame.display.set_mode((1080, 720), pygame.RESIZABLE | pygame.SCALED)
         pygame.mixer.init()
 
         #create font type and size
