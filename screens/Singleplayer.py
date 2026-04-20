@@ -130,15 +130,15 @@ class SingleplayerScreen:
         # Only act if the player hasn't pressed SPACE, and the time is up!
         if self.active_player is None and current_time >= self.comp_target_time:
 
-            hint_indices = self.game.table.give_hint()
+            set_indices = self.game.table.give_set()
 
-            if hint_indices:  # If there is actually a set on the board
+            if set_indices:  # If there is actually a set on the board
                 # Simulate the computer instantly clicking the 3 cards
                 self.game.table.selection_mode = True
                 self.game.table.selected = []
-                self.game.table.handle_click(hint_indices[0])
-                self.game.table.handle_click(hint_indices[1])
-                self.game.table.handle_click(hint_indices[2])
+                self.game.table.handle_click(set_indices[0])
+                self.game.table.handle_click(set_indices[1])
+                self.game.table.handle_click(set_indices[2])
 
                 self.comp_score += 1
                 self.check_winner()
