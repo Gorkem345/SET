@@ -64,6 +64,27 @@ class SingleplayerScreen:
             self.correct_sound = None
             self.wrong_sound = None
 
+    def reset_game_screen(self):
+        """Resets all scores, timers, and the computer's brain for a fresh game."""
+        self.p1_score = 0
+        self.comp_score = 0
+        self.winner = None
+        self.clear_set_timer()
+
+        # Reset the 5-minute game timer (if you are using it here)
+        self.game_start_time = pygame.time.get_ticks()
+
+        # Reset the table
+        self.game.table.selection_mode = False
+        self.game.table.selected = []
+        self.game.table.hinted = []
+        self.game.table.handle_start_game()
+
+        # Completely Reset the Computer
+        self.reset_computer_timer()  # Give it a fresh 8-20 seconds
+        self.comp_clicks_pending = []  # Clear any queued clicks
+        self.computer_showing_set = False  # Stop it from showing old hints
+
     def start_set_timer(self, player):
         """Start the 15-second answer period for one player."""
         self.active_player = player

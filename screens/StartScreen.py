@@ -20,14 +20,19 @@ class StartScreen:
         mouse = pygame.mouse.get_pos() #get mouse position
 
         if event.type == pygame.MOUSEBUTTONDOWN: #if mouse was clicked
-            # Click on Singleplayer --> go to SingleplayerScreen
-            if self.singleplayer_button.collidepoint(mouse):  # if the mouse is clicked inside the play button area
-                self.game.current_screen = self.game.singleplayer_screen
-            # Click on Play --> go to GameScreen
-            elif self.play_button.collidepoint(mouse): #if the mouse is clicked inside the play button area
-                self.game.game_screen.reset_game_screen() #connect to Game, use game_screen object to connect Gamescreen,
-                                                          # call the reset game screen function
-                self.game.current_screen = self.game.game_screen
+            # If they click SINGLEPLAYER
+            if self.singleplayer_button.collidepoint(mouse):
+                # Tell the controls screen where to go
+                self.game.pre_start_screen.next_screen = self.game.singleplayer_screen
+                # Send them to the controls screen
+                self.game.current_screen = self.game.pre_start_screen
+
+            # If they click MULTIPLAYER
+            elif self.play_button.collidepoint(mouse):
+                # Tell the controls screen where to go
+                self.game.pre_start_screen.next_screen = self.game.game_screen
+                # Send them to the controls screen
+                self.game.current_screen = self.game.pre_start_screen
             # Click on Quit --> shut down
             elif self.quit_button.collidepoint(mouse):
                 pygame.quit()
