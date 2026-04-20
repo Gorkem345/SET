@@ -248,7 +248,7 @@ class SingleplayerScreen:
                 # Ask the board which card index the mouse is over
                 clicked_index = self.board.get_clicked_card_index(mouse)
 
-                if clicked_index is not None:
+                if clicked_index is not None and self.active_player != 2:
                     # Pass the click to your Table logic
                     forms_set = self.game.table.handle_click(clicked_index)
 
