@@ -25,6 +25,8 @@ class RulesScreen:
         # Font for rules
         self.rules_font = pygame.font.SysFont("Corbel", 20)
 
+        self.examples = pygame.image.load("images/example_sets.png").convert_alpha()
+
     def handle_event(self, event):
         mouse = pygame.mouse.get_pos()
 
@@ -49,3 +51,9 @@ class RulesScreen:
             surf = self.rules_font.render(line, True, WHITE)
             screen.blit(surf, (100, y))
             y += 35
+        # Example sets image + text
+        rect = self.examples.get_rect(center= (880, 340))
+        screen.blit(self.examples, rect)
+        examples_text = self.game.sub_font.render("Example sets:", True, WHITE)
+        examples_rect = examples_text.get_rect(center=(880, 190))
+        screen.blit(examples_text, examples_rect)

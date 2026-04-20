@@ -40,6 +40,18 @@ class GameScreen:
         y = (img_h - screen_h) // 2
         self.background = img.subsurface((x, y, screen_w, screen_h))
 
+        try:
+            self.correct_sound = pygame.mixer.Sound("sounds/correct.wav")
+            self.wrong_sound = pygame.mixer.Sound("sounds/wrong.wav")
+
+            # Optional: adjust volume (0.0 to 1.0)
+            self.correct_sound.set_volume(0.5)
+            self.wrong_sound.set_volume(0.5)
+        except Exception as e:
+            print(f"Could not load sounds: {e}")
+            self.correct_sound = None
+            self.wrong_sound = None
+
     def start_set_timer(self, player):
         """Start the 15-second answer period for one player."""
         self.active_player = player
@@ -195,9 +207,13 @@ class GameScreen:
 
                     # If handle_click finished processing 3 cards, selection_mode will turn False
                     if not self.game.table.selection_mode:
-                        # (Ideally, you check if they actually got it right here to award points)
+
                         if forms_set is not None:
                             if forms_set:
+                                # Play Correct Sound
+                                if self.correct_sound:
+                                    self.correct_sound.play()
+
                                 if self.active_player == 1:
                                     self.p1_score += 1
                                     self.check_winner()
@@ -205,10 +221,15 @@ class GameScreen:
                                     self.p2_score += 1
                                     self.check_winner()
                             else:
+                                # Play Wrong Sound
+                                if self.wrong_sound:
+                                    self.wrong_sound.play()
+
                                 if self.active_player == 1:
                                     self.p1_score -= 1
                                 elif self.active_player == 2:
                                     self.p2_score -= 1
+
                         # Stop the timer and end the turn
                         self.clear_set_timer()
                         # Clear hints

@@ -11,9 +11,9 @@ class StartScreen:
 
         self.logo = pygame.image.load("images/set_cards.png").convert_alpha()
         # Rectangle of button
-        self.singleplayer_button = pygame.Rect(470, 310, 200, 80)
-        self.play_button = pygame.Rect(470, 410, 200, 80)
-        self.quit_button = pygame.Rect(470, 510, 200, 50)
+        self.singleplayer_button = pygame.Rect(440, 310, 200, 80)
+        self.play_button = pygame.Rect(440, 410, 200, 80)
+        self.quit_button = pygame.Rect(440, 510, 200, 50)
         self.rules_button = pygame.Rect(0, 600, 140, 50)
 
     def handle_event(self, event):
@@ -62,7 +62,7 @@ class StartScreen:
         quit_text = self.game.font.render("Quit", True, WHITE)
         rules_text = self.game.font.render("Rules", True, WHITE)
 
-        # Place buttons on screen
+        # Place text of buttons on screen
         screen.blit(singleplayer_text, singleplayer_text.get_rect(center=(self.singleplayer_button.centerx, self.singleplayer_button.centery - 15)))
         screen.blit(singleplayer_subtext, singleplayer_subtext.get_rect(center=(self.singleplayer_button.centerx, self.singleplayer_button.centery + 20)))
         screen.blit(play_text, play_text.get_rect(center=(self.play_button.centerx, self.play_button.centery - 15)))
