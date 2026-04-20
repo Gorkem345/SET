@@ -67,6 +67,10 @@ class Game:
 
                 #pass each event (mouse click, keyboard type) to handle_event
 
+            if self.table.waiting_for_replace and pygame.time.get_ticks() >= self.table.replace_time:
+                self.table.waiting_for_replace = False
+                self.table.replace_selection()
+
             self.current_screen.draw(self.screen)
             pygame.display.update()
         pygame.quit()

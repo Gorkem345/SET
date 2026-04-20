@@ -1,6 +1,7 @@
 from utils.image_dictionary import cards
 import random
 import copy
+import pygame
 
 
 class Table:
@@ -11,6 +12,9 @@ class Table:
         self.hint = []
         self.selected = []
         self.selection_mode = False
+        self.waiting_for_replace = False
+        self.replace_time = 0
+        self.correct_set = False
         self.game_end = False
 
     def handle_start_game(self):
@@ -34,6 +38,17 @@ class Table:
         ###### STOP THE TIMER
         if is_set(self.cards_on_table[self.selected[0]], self.cards_on_table[self.selected[1]], self.cards_on_table[self.selected[2]]):
             set_formed = True
+            self.correct_set = True
+        else:
+            self.correct_set = False
+
+        self.waiting_for_replace = True
+        self.replace_time = pygame.time.get_ticks() + 1500
+        self.selection_mode = False
+        return set_formed
+
+    def replace_selection(self):
+        if self.correct_set:
             if self.num_cards_in_deck > 0:
                 self.pull3cards()
             else:
@@ -42,14 +57,12 @@ class Table:
                 self.cards_on_table[self.selected[2]] = None
                 if self.find_sets() == []:
                     self.game_end = True
-
             ###### INCREASE THE PLAYER'S SCORE ######
         else:
             ###### DECREASE THE PLAYER'S SCORE ######
             pass
-        self.selection_mode = False
+        self.correct_set = False
         self.selected = []
-        return set_formed
 
     def pull3cards(self): #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         if self.num_cards_in_deck < 3 and self.find_sets() == []:
