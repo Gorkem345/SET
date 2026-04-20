@@ -29,8 +29,18 @@ class GameScreen:
         # Whole game timer: 5 minutes
         self.game_duration = 181000
         self.game_start_time = pygame.time.get_ticks()
+        #remember when the GameScreen is created not the time when you hit multiplayer play
 
+        #winner
         self.winner = None
+
+        #Game pause timer
+        self.paused = False
+        self.pause_start_time = 0
+
+        #messager panel
+        self.status_message = "Press set when ready"
+        self.message_end_time = 0
 
         # Background
         img = pygame.image.load("images/table.png").convert()
@@ -56,8 +66,7 @@ class GameScreen:
         """Start the 15-second answer period for one player."""
         self.active_player = player
         self.set_start_time = pygame.time.get_ticks()  # it is the time pass when the game start until you click SET button
-        # a = f'set_start_time: {self.set_start_time}'
-        # print(a)
+
 
     def clear_set_timer(self):
         """Stop the answer period."""
@@ -85,13 +94,25 @@ class GameScreen:
             elif self.active_player == 2:
                 self.p2_score -= 1
 
+            self.show_message("Time's up!", 1500)
             self.clear_set_timer()
             return 0
 
         return remaining // 1000 + 1
 
     def get_game_time_left(self):
-        current_time = pygame.time.get_ticks()
+        #current_time = pygame.time.get_ticks() #the time now (since the program start)
+        #elapsed = current_time - self.game_start_time #time is the moment when  GameScreen created
+        #remaining = self.game_duration - elapsed #since the program keep running, the elapse keep moving forward
+                                                 #at first it is the time gap between NOW - Gamescreen create
+                                                 #then it is time now + 1 - gamescreen created
+                                                 # so on.
+
+        if self.paused:
+            current_time = self.pause_start_time
+        else:
+            current_time = pygame.time.get_ticks()
+
         elapsed = current_time - self.game_start_time
         remaining = self.game_duration - elapsed
 
@@ -129,6 +150,29 @@ class GameScreen:
 
             self.reset_game_screen()
 
+    #pause and resume function
+    def pause(self):
+        if not self.paused:
+            self.paused = True
+            self.pause_start_time = pygame.time.get_ticks()
+
+    def resume(self):
+        if self.paused:
+            pause_duration = pygame.time.get_ticks() - self.pause_start_time
+            self.game_start_time += pause_duration
+            self.paused = False
+
+    def pause_game_timer(self):
+        if not self.paused:
+            self.paused = True
+            self.pause_start_time = pygame.time.get_ticks()
+
+    def resume_game_timer(self):
+        if self.paused:
+            paused_duration = pygame.time.get_ticks() - self.pause_start_time
+            self.game_start_time += paused_duration
+            self.paused = False
+
     def check_winner(self):
         # GameScreen knows Game
         # WinnerScreen knows Game
@@ -156,6 +200,11 @@ class GameScreen:
             self.p1_score = 0  # initial score
             self.p2_score = 0
             self.game.table.handle_start_game()
+
+    #show different message based on user action result
+    def show_message(self, text, duration=1500):
+        self.status_message = text
+        self.message_end_time = pygame.time.get_ticks() + duration
 
     def handle_event(self, event):
         mouse = pygame.mouse.get_pos()  # get mouse position
@@ -330,17 +379,22 @@ class GameScreen:
         pygame.draw.rect(screen, (44, 44, 62), message_panel, border_radius=12)
         pygame.draw.rect(screen, WHITE, message_panel, 2, border_radius=12)
 
-        if self.active_player is not None:
-            turn_text = self.game.sub_font.render(
-                f"Player {self.active_player} is answering", True, WHITE
-            )
-            timer_text = self.game.sub_font.render(
-                f"Time left: {time_left}s", True, WHITE
-            )
-            screen.blit(turn_text, (message_panel.x + 20, message_panel.y + 10))
-            screen.blit(timer_text, (message_panel.x + 20, message_panel.y + 40))
+        current_time = pygame.time.get_ticks()
+
+        if current_time < self.message_end_time:
+            message_text = self.game.sub_font.render(self.status_message, True,
+                                                     WHITE)
         else:
-            wait_text = self.game.sub_font.render("Press set when ready", True, WHITE)
-            timer_text = self.game.sub_font.render(f"Time left: {time_left}s", True, WHITE)
-            screen.blit(wait_text, (message_panel.x + 20, message_panel.y + 10))
-            screen.blit(timer_text, (message_panel.x + 20, message_panel.y + 40))
+            if self.active_player is not None:
+                message_text = self.game.sub_font.render(
+                    f"Player {self.active_player} is answering", True, WHITE
+                )
+            else:
+                message_text = self.game.sub_font.render("Press set when ready",
+                                                         True, WHITE)
+
+        timer_text = self.game.sub_font.render(f"Time left: {time_left}s", True,
+                                               WHITE)
+
+        screen.blit(message_text, (message_panel.x + 20, message_panel.y + 10))
+        screen.blit(timer_text, (message_panel.x + 20, message_panel.y + 40))

@@ -18,10 +18,14 @@ class RulesScreen:
             "A 'Set' consists of three cards in which each attribute is EITHER the same",
             "on each card OR is different on each card.",
             "That is to say, any attribute in the 'Set' of three cards is either common to all three cards",
-            " or is different on each card."
+            " or is different on each card.",
+            " ",
+            "Winning conditions",
+            '1. When the timer expires, the player with the highest total score is declared the winner.',
+            '2. If the deck is empty and no further sets can be formed, the player with the highest score wins.'
         ]
         # Size and place of button
-        self.goback_button = pygame.Rect(0, 600, 140, 50)
+        self.goback_button = pygame.Rect(940, 600, 140, 50)
         # Font for rules
         self.rules_font = pygame.font.SysFont("Corbel", 20)
 

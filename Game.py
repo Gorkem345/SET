@@ -7,6 +7,7 @@ from screens.WinnerScreen import WinnerScreen
 from screens.TableDisplay import Display_card
 from utils.set_table import Table
 from screens.Singleplayer import SingleplayerScreen
+from screens.ConfirmScreen import ConfirmScreen
 from screens.PreStartScreen import PreStartScreen
 
 
@@ -37,6 +38,7 @@ class Game:
         self.game_screen = GameScreen(self)
         self.rules_screen = RulesScreen(self)
         self.winner_screen = WinnerScreen(self)
+        self.confirm_screen = ConfirmScreen(self)
         self.pre_start_screen = PreStartScreen(self)
 
 
