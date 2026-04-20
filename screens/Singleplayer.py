@@ -150,6 +150,7 @@ class SingleplayerScreen:
                 self.game.winner = "Player 1 and Computer!"
 
             self.game.p1_score = self.p1_score
+            self.game.winner_screen.prev_screen = self.game.singleplayer_screen
             self.game.current_screen = self.game.winner_screen
 
             # reset timer, score and the game

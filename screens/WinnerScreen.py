@@ -5,6 +5,7 @@ class WinnerScreen:
     def __init__(self, game):
         self.game = game #this is a genius idea to connect to the Game object
         self.homepage_button = pygame.Rect(470, 410, 140, 50)
+        self.prev_screen = None
 
     def handle_event(self, event):
         mouse = pygame.mouse.get_pos()
@@ -29,11 +30,19 @@ class WinnerScreen:
 
 
         #Winner result
-        lines = [
-            f"Winner: {self.game.winner}",
-            f"P1 score: {self.game.p1_score}",
-            f"P2 score: {self.game.p2_score}"
-        ]
+        if self.prev_screen == self.game.game_screen:
+            lines = [
+                f"Winner: {self.game.winner}",
+                f"P1 score: {self.game.p1_score}",
+                f"P2 score: {self.game.p2_score}"
+            ]
+
+        if self.prev_screen == self.game.singleplayer_screen:
+            lines = [
+                f"Winner: {self.game.winner}",
+                f"P1 score: {self.game.p1_score}",
+                f"Computer score: {self.game.comp_score}"
+            ]
 
         # Draw each line
         for i, line in enumerate(lines):
