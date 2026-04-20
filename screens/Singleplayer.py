@@ -21,6 +21,10 @@ class SingleplayerScreen:
         # HINT button
         self.hint_button = pygame.Rect(0, 0, 100, 40)
 
+        # --- NEW BUTTONS ---
+        self.restart_button = pygame.Rect(0, 0, 100, 50)
+        self.menu_button = pygame.Rect(0, 0, 100, 50)
+
         # -----------------------------
         # Score system
         # -----------------------------
@@ -235,56 +239,63 @@ class SingleplayerScreen:
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
 
-            '''
-            # 1. Check if they clicked the PLUS button
-            if self.plus.collidepoint(mouse):
-                if self.active_player == 1:
-                    self.p1_score += 1
-                    self.check_winner()
-                elif self.active_player == 2:
-                    self.comp_score += 1
-                    self.check_winner()
-            '''
+            if event.button == 1:
+                # 2. Check if they clicked the HINT button
+                if self.hint_button.collidepoint(mouse):
+                    hint_indices = self.game.table.give_hint()
+                    if hint_indices:
+                        self.game.table.hinted = hint_indices
 
-            # 2. Check if they clicked the HINT button
-            if self.hint_button.collidepoint(mouse):
-                hint_indices = self.game.table.give_hint()
-                if hint_indices:
-                    self.game.table.hinted = hint_indices
+                # --- NEW: Restart Button ---
+                elif self.restart_button.collidepoint(mouse):
+                    self.reset_game_screen()
 
-            # 3. Check if they clicked a CARD
-            elif self.active_player is not None:
-                # Ask the board which card index the mouse is over
-                clicked_index = self.board.get_clicked_card_index(mouse)
+                # --- NEW: Menu Button ---
+                elif self.menu_button.collidepoint(mouse):
+                    self.game.current_screen = self.game.start_screen
+                    self.reset_game_screen()
 
-                if clicked_index is not None and self.active_player != 2:
-                    # Pass the click to your Table logic
-                    forms_set = self.game.table.handle_click(clicked_index)
+                # 3. Check if they clicked a CARD
+                elif self.active_player is not None:
+                    # Ask the board which card index the mouse is over
+                    clicked_index = self.board.get_clicked_card_index(mouse)
 
-                    # If handle_click finished processing 3 cards, selection_mode will turn False
-                    if not self.game.table.selection_mode:
-                        # (Ideally, you check if they actually got it right here to award points)
-                        if forms_set is not None:
-                            if forms_set:
-                                if self.correct_sound:
-                                    self.correct_sound.play()
-                                if self.active_player == 1:
-                                    self.p1_score += 1
-                                    self.check_winner()
-                                elif self.active_player == 2:
-                                    self.comp_score += 1
-                                    self.check_winner()
-                            else:
-                                if self.wrong_sound:
-                                    self.wrong_sound.play()
-                                if self.active_player == 1:
-                                    self.p1_score -= 1
-                                elif self.active_player == 2:
-                                    self.comp_score -= 1
-                        # Stop the timer and end the turn
-                        self.clear_set_timer()
-                        # Clear hints
-                        self.game.table.hinted = []
+                    if clicked_index is not None and self.active_player != 2:
+                        # Pass the click to your Table logic
+                        forms_set = self.game.table.handle_click(clicked_index)
+
+                        # If handle_click finished processing 3 cards, selection_mode will turn False
+                        if not self.game.table.selection_mode:
+                            # (Ideally, you check if they actually got it right here to award points)
+                            if forms_set is not None:
+                                if forms_set:
+                                    if self.correct_sound:
+                                        self.correct_sound.play()
+                                    if self.active_player == 1:
+                                        self.p1_score += 1
+                                        self.check_winner()
+                                    elif self.active_player == 2:
+                                        self.comp_score += 1
+                                        self.check_winner()
+                                else:
+                                    if self.wrong_sound:
+                                        self.wrong_sound.play()
+                                    if self.active_player == 1:
+                                        self.p1_score -= 1
+                                    elif self.active_player == 2:
+                                        self.comp_score -= 1
+                            # Stop the timer and end the turn
+                            self.clear_set_timer()
+                            # Clear hints
+                            self.game.table.hinted = []
+
+            elif event.button == 3:
+                if self.active_player is not None:
+                    clicked_index = self.board.get_clicked_card_index(mouse)
+
+                    if clicked_index is not None and self.active_player != 2:
+                        self.game.table.handle_right_click(clicked_index)
+
 
     def draw(self, screen):
         mouse = pygame.mouse.get_pos()
@@ -300,13 +311,11 @@ class SingleplayerScreen:
         # Check timer every frame
         time_left = self.get_time_left()
 
-        # LEFT PANEL
-        left_panel = pygame.Rect(20, 20, 280, 500)  # topleft x, y, width, height
+        # LEFT PANEL (Increased height to 600)
+        left_panel = pygame.Rect(20, 20, 280, 600)  # topleft x, y, width, height
 
         # panel background
         pygame.draw.rect(screen, (44, 44, 62), left_panel, border_radius=12)
-        # where to draw: screen, what color, recantagle: left_panel,
-        # border_radius, Instead of sharp 90° corners, the rectangle gets rounded corners
 
         # panel border
         pygame.draw.rect(screen, WHITE, left_panel, 2, border_radius=12)
@@ -320,21 +329,23 @@ class SingleplayerScreen:
                                                   True, WHITE)
 
         # change from absolute position to relative position of the panel
-
         screen.blit(score_text, (left_panel.x + 20, left_panel.y + 45))
         screen.blit(p1_score_text, (left_panel.x + 20, left_panel.y + 105))
         screen.blit(comp_score_text, (left_panel.x + 20, left_panel.y + 145))
 
         # BUTTON POSITIONS INSIDE PANEL
         self.setbutton.center = (left_panel.centerx, left_panel.y + 250)
-        #self.plus.center = (left_panel.centerx, left_panel.y + 300)
         self.hint_button.center = (left_panel.centerx, left_panel.y + 350)
+        # --- NEW BUTTON POSITIONS ---
+        self.restart_button.center = (left_panel.x + 75, left_panel.y + 550)
+        self.menu_button.center = (left_panel.x + 195, left_panel.y + 550)
 
         # BUTTON TEXTS
-        #set_text = self.game.sub_font.render("SET", True, WHITE)
         sethint_text1 = self.game.sub_font.render('P1 press Space', True, WHITE)
-        #plus_text = self.game.sub_font.render("PLUS", True, WHITE)
         hint_text = self.game.sub_font.render("HINT", True, WHITE)
+        # --- NEW BUTTON TEXTS ---
+        restart_text = self.game.small_font.render("RESTART", True, WHITE)
+        menu_text = self.game.small_font.render("MENU", True, WHITE)
 
         # DRAW BUTTONS
         # -------------------------
@@ -346,20 +357,8 @@ class SingleplayerScreen:
             self.setbutton,
             border_radius=12
         )
-        #screen.blit(set_text,
-        #           set_text.get_rect(center=(self.setbutton.centerx, self.setbutton.centery - 15)))
         screen.blit(sethint_text1,
                     sethint_text1.get_rect(center=(self.setbutton.centerx, self.setbutton.centery)))
-
-        '''
-        pygame.draw.rect(
-            screen,
-            LIGHT if self.plus.collidepoint(mouse) else DARK,
-            self.plus,
-            border_radius=12
-        )
-        '''
-        #screen.blit(plus_text, plus_text.get_rect(center=self.plus.center))
 
         # Draw HINT button
         pygame.draw.rect(
@@ -370,8 +369,26 @@ class SingleplayerScreen:
         )
         screen.blit(hint_text, hint_text.get_rect(center=self.hint_button.center))
 
-        # Timer / message panel
-        message_panel = pygame.Rect(20, 540, 280, 160)  # topleft x, y, width, height
+        # --- Draw RESTART button ---
+        pygame.draw.rect(
+            screen,
+            LIGHT if self.restart_button.collidepoint(mouse) else DARK,
+            self.restart_button,
+            border_radius=12
+        )
+        screen.blit(restart_text, restart_text.get_rect(center=self.restart_button.center))
+
+        # --- Draw MENU button ---
+        pygame.draw.rect(
+            screen,
+            LIGHT if self.menu_button.collidepoint(mouse) else DARK,
+            self.menu_button,
+            border_radius=12
+        )
+        screen.blit(menu_text, menu_text.get_rect(center=self.menu_button.center))
+
+        # Timer / message panel (Adjusted Y to 630 and height to 80 to fit under the new taller panel)
+        message_panel = pygame.Rect(20, 630, 280, 80)
         pygame.draw.rect(screen, (44, 44, 62), message_panel, border_radius=12)
         pygame.draw.rect(screen, WHITE, message_panel, 2, border_radius=12)
 
@@ -382,11 +399,11 @@ class SingleplayerScreen:
             timer_text = self.game.sub_font.render(
                 f"Time left: {time_left}s", True, WHITE
             )
-            screen.blit(turn_text, (message_panel.x + 20, message_panel.y + 20))
-            screen.blit(timer_text, (message_panel.x + 20, message_panel.y + 60))
+            screen.blit(turn_text, (message_panel.x + 20, message_panel.y + 10))
+            screen.blit(timer_text, (message_panel.x + 20, message_panel.y + 40))
         else:
             wait_text = self.game.sub_font.render("Press set when ready", True, WHITE)
-            screen.blit(wait_text, (message_panel.x + 20, message_panel.y + 20))
+            screen.blit(wait_text, (message_panel.x + 20, message_panel.y + 10))
 
             timer_text = self.game.sub_font.render(f"Time left: {time_left}s", True, WHITE)
-            screen.blit(timer_text, (message_panel.x + 20, message_panel.y + 60))
+            screen.blit(timer_text, (message_panel.x + 20, message_panel.y + 40))

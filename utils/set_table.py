@@ -33,6 +33,14 @@ class Table:
                     return self.handle_selection()
         return None #No complete selection made yet
 
+    def handle_right_click(self, index):
+        if self.selection_mode:
+            if self.cards_on_table[index] != None and index in self.selected:
+                self.selected.remove(index)
+                #print(f"Removed {index}. New list: {self.selected}")  # Debug
+                return True
+        return False
+
     def handle_selection(self): #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         set_formed = False
         ###### STOP THE TIMER

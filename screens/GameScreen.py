@@ -84,6 +84,7 @@ class GameScreen:
         remaining = self.set_time_limit - elapsed
 
         if remaining <= 0:
+            # Clear the highlighted cards when time is up!
             self.game.table.selection_mode = False
             self.game.table.selected = []
             self.game.table.hinted = []
@@ -226,66 +227,69 @@ class GameScreen:
         # --- MOUSE EVENTS (For UI and Cards) ---
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                # 2. Check if they clicked the HINT button
+                if self.hint_button.collidepoint(mouse):
+                    hint_indices = self.game.table.give_hint()
+                    if hint_indices:
+                        self.game.table.hinted = hint_indices
 
-            # 2. Check if they clicked the HINT button
-            if self.hint_button.collidepoint(mouse):
-                hint_indices = self.game.table.give_hint()
-                if hint_indices:
-                    self.game.table.hinted = hint_indices
+                # Restart
+                elif self.restart_button.collidepoint(mouse):
+                    self.reset_game_screen()
 
-            # Restart
-            elif self.restart_button.collidepoint(mouse):
-                self.pause_game_timer()
-                self.game.confirm_screen.open("restart")
-                self.game.current_screen = self.game.confirm_screen
+                # Back to menu
+                elif self.menu_button.collidepoint(mouse):
 
-            # Back to menu
-            elif self.menu_button.collidepoint(mouse):
-                self.pause_game_timer()
-                self.game.confirm_screen.open("menu")
-                self.game.current_screen = self.game.confirm_screen
+                    self.game.current_screen = self.game.start_screen
+                    self.reset_game_screen()
 
 
-            # 3. Check if they clicked a CARD
-            elif self.active_player is not None:
-                # Ask the board which card index the mouse is over
-                clicked_index = self.board.get_clicked_card_index(mouse)
+                # 3. Check if they clicked a CARD
+                elif self.active_player is not None:
+                    # Ask the board which card index the mouse is over
+                    clicked_index = self.board.get_clicked_card_index(mouse)
 
-                if clicked_index is not None:
-                    # Pass the click to your Table logic
-                    forms_set = self.game.table.handle_click(clicked_index)
+                    if clicked_index is not None:
+                        # Pass the click to your Table logic
+                        forms_set = self.game.table.handle_click(clicked_index)
 
-                    # If handle_click finished processing 3 cards, selection_mode will turn False
-                    if not self.game.table.selection_mode:
+                        # If handle_click finished processing 3 cards, selection_mode will turn False
+                        if not self.game.table.selection_mode:
 
-                        if forms_set is not None:
-                            if forms_set:
-                                self.show_message("SET!", 1500)
+                            if forms_set is not None:
+                                if forms_set:
+                                    # Play Correct Sound
+                                    if self.correct_sound:
+                                        self.correct_sound.play()
 
-                                if self.correct_sound:
-                                    self.correct_sound.play()
+                                    if self.active_player == 1:
+                                        self.p1_score += 1
+                                        self.check_winner()
+                                    elif self.active_player == 2:
+                                        self.p2_score += 1
+                                        self.check_winner()
+                                else:
+                                    # Play Wrong Sound
+                                    if self.wrong_sound:
+                                        self.wrong_sound.play()
 
-                                if self.active_player == 1:
-                                    self.p1_score += 1
-                                    self.check_winner()
-                                elif self.active_player == 2:
-                                    self.p2_score += 1
-                                    self.check_winner()
-                            else:
-                                self.show_message("Not a set!", 1500)
-
-                                if self.wrong_sound:
-                                    self.wrong_sound.play()
-
-                                if self.active_player == 1:
+                                    if self.active_player == 1:
                                         self.p1_score -= 1
-                                elif self.active_player == 2:
-                                    self.p2_score -= 1
+                                    elif self.active_player == 2:
+                                        self.p2_score -= 1
 
-                        # Stop the timer and end the turn
-                        self.clear_set_timer()
-                        # Clear hints
-                        self.game.table.hinted = []
+                            # Stop the timer and end the turn
+                            self.clear_set_timer()
+                            # Clear hints
+                            self.game.table.hinted = []
+
+            elif event.button == 3:
+                if self.active_player is not None:
+                    clicked_index = self.board.get_clicked_card_index(mouse)
+
+                    if clicked_index is not None:
+                        self.game.table.handle_right_click(clicked_index)
 
     def draw(self, screen):
         mouse = pygame.mouse.get_pos()
