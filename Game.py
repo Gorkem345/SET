@@ -12,6 +12,7 @@ from screens.Singleplayer import SingleplayerScreen
 class Game:
     def __init__(self):
         self.screen = pygame.display.set_mode((1080, 720))
+        pygame.mixer.init()
 
         #create font type and size
         self.font = pygame.font.SysFont("Corbel", 40)
