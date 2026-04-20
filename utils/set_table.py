@@ -33,7 +33,7 @@ class Table:
         if self.selection_mode:
             if self.cards_on_table[index] != None and index in self.selected:
                 self.selected.remove(index)
-                print(f"Removed {index}. New list: {self.selected}")  # Debug
+                #print(f"Removed {index}. New list: {self.selected}")  # Debug
                 return True
         return False
 
