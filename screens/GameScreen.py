@@ -8,39 +8,36 @@ class GameScreen:
     def __init__(self, game):  # self.game_screen = GameScreen(self)
         self.game = game  # game here is the Game object, so self.game = Game()
         self.board = Display_board(game)
-        # Player interface
+
+        # UI buttons
         self.setbutton = pygame.Rect(200, 80, 198, 80)
-
-        # testing button
-        #self.plus = pygame.Rect(500, 80, 100, 40)
-
-        # HINT button
         self.hint_button = pygame.Rect(0, 0, 100, 40)
+        self.restart_button = pygame.Rect(0, 0, 100, 50)
+        self.menu_button = pygame.Rect(0, 0, 100, 50)
 
-        # -----------------------------
-        # Score system
-        # -----------------------------
-        self.p1_score = 0  # initial score
+        # Score
+        self.p1_score = 0
         self.p2_score = 0
 
-        # Which player pressed SET?
+        # Active answering player
         self.active_player = None
 
-        # Timer settings
-        self.set_time_limit = 15000  # 15000 milliseconds = 15 seconds
+        # 15-second SET timer
+        self.set_time_limit = 15000
         self.set_start_time = 0
 
-        # Winner: Score > 30
+        # Whole game timer: 5 minutes
+        self.game_duration = 181000
+        self.game_start_time = pygame.time.get_ticks()
+
         self.winner = None
 
-        # load table background
-        # I only want the center part of the image
+        # Background
         img = pygame.image.load("images/table.png").convert()
         img_w, img_h = img.get_size()
         screen_w, screen_h = 1080, 720
         x = (img_w - screen_w) // 2
         y = (img_h - screen_h) // 2
-
         self.background = img.subsurface((x, y, screen_w, screen_h))
 
     def start_set_timer(self, player):
@@ -59,7 +56,7 @@ class GameScreen:
         """Return remaining time in seconds. If no timer, return 15''."""
 
         if self.active_player is None:
-            return "%d" % 15
+            return 15
 
         current_time = pygame.time.get_ticks()
         elapsed = current_time - self.set_start_time
@@ -80,6 +77,45 @@ class GameScreen:
             return 0
 
         return remaining // 1000 + 1
+
+    def get_game_time_left(self):
+        current_time = pygame.time.get_ticks()
+        elapsed = current_time - self.game_start_time
+        remaining = self.game_duration - elapsed
+
+        if remaining <= 0:
+            return 0
+
+        return remaining // 1000
+
+    def reset_game_screen(self):
+        self.p1_score = 0
+        self.p2_score = 0
+        self.winner = None
+        self.clear_set_timer()
+
+        self.game_start_time = pygame.time.get_ticks()
+
+        # Reset table state too
+        self.game.table.selection_mode = False
+        self.game.table.selected = []
+        self.game.table.hinted = []
+        self.game.table.handle_start_game()
+
+    def check_game_timeout(self):
+        if self.get_game_time_left() <= 0:
+            if self.p1_score > self.p2_score:
+                self.game.winner = "Player 1!"
+            elif self.p2_score > self.p1_score:
+                self.game.winner = "Player 2!"
+            else:
+                self.game.winner = "Draw!"
+
+            self.game.p1_score = self.p1_score
+            self.game.p2_score = self.p2_score
+            self.game.current_screen = self.game.winner_screen
+
+            self.reset_game_screen()
 
     def check_winner(self):
         # GameScreen knows Game
@@ -131,22 +167,21 @@ class GameScreen:
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
 
-            '''
-            # 1. Check if they clicked the PLUS button
-            if self.plus.collidepoint(mouse):
-                if self.active_player == 1:
-                    self.p1_score += 1
-                    self.check_winner()
-                elif self.active_player == 2:
-                    self.p2_score += 1
-                    self.check_winner()
-            '''
-
             # 2. Check if they clicked the HINT button
             if self.hint_button.collidepoint(mouse):
                 hint_indices = self.game.table.give_hint()
                 if hint_indices:
                     self.game.table.hinted = hint_indices
+
+            # Restart
+            elif self.restart_button.collidepoint(mouse):
+                self.reset_game_screen()
+
+            # Back to menu
+            elif self.menu_button.collidepoint(mouse):
+                self.reset_game_screen()
+                self.game.current_screen = self.game.start_screen
+
 
             # 3. Check if they clicked a CARD
             elif self.active_player is not None:
@@ -181,80 +216,60 @@ class GameScreen:
     def draw(self, screen):
         mouse = pygame.mouse.get_pos()
 
-        # show background
         screen.blit(self.background, (0, 0))
-
-        # Display the board
         self.board.draw(screen)
 
-        # Check timer every frame
+        # Timers
         time_left = self.get_time_left()
+        game_time_left = self.get_game_time_left()
+        self.check_game_timeout()
 
-        # LEFT PANEL
-        left_panel = pygame.Rect(20, 20, 280, 500)  # topleft x, y, width, height
-
-        # panel background
+        # Left panel
+        left_panel = pygame.Rect(20, 20, 280, 600)
         pygame.draw.rect(screen, (44, 44, 62), left_panel, border_radius=12)
-        # where to draw: screen, what color, recantagle: left_panel,
-        # border_radius, Instead of sharp 90° corners, the rectangle gets rounded corners
-
-        # panel border
         pygame.draw.rect(screen, WHITE, left_panel, 2, border_radius=12)
 
-        # TEXTS
+        # Score texts
         score_text = self.game.font.render("Score:", True, WHITE)
-        p1_score_text = self.game.sub_font.render(f"Player 1:   {self.p1_score}",
-                                                  True, WHITE)
+        p1_score_text = self.game.sub_font.render(f"Player 1:   {self.p1_score}", True, WHITE)
+        p2_score_text = self.game.sub_font.render(f"Player 2:   {self.p2_score}", True, WHITE)
 
-        p2_score_text = self.game.sub_font.render(f"Player 2:   {self.p2_score}",
-                                                  True, WHITE)
-
-        # change from absolute position to relative position of the panel
+        minutes = game_time_left // 60
+        seconds = game_time_left % 60
+        game_duration_text = self.game.sub_font.render(
+            f"Game time: {minutes}:{seconds:02}", True, WHITE
+        )
 
         screen.blit(score_text, (left_panel.x + 20, left_panel.y + 45))
-        screen.blit(p1_score_text, (left_panel.x + 20, left_panel.y + 105))
-        screen.blit(p2_score_text, (left_panel.x + 20, left_panel.y + 145))
+        screen.blit(p1_score_text, (left_panel.x + 20, left_panel.y + 85))
+        screen.blit(p2_score_text, (left_panel.x + 20, left_panel.y + 125))
+        screen.blit(game_duration_text, (left_panel.x + 20, left_panel.y + 185))
 
-        # BUTTON POSITIONS INSIDE PANEL
-        self.setbutton.center = (left_panel.centerx, left_panel.y + 250)
-        #self.plus.center = (left_panel.centerx, left_panel.y + 300)
-        self.hint_button.center = (left_panel.centerx, left_panel.y + 350)
+        # Button positions
+        self.setbutton.center = (left_panel.centerx, left_panel.y + 285)
+        self.hint_button.center = (left_panel.centerx, left_panel.y + 360)
+        self.restart_button.center = (left_panel.x + 75, left_panel.y + 550)
+        self.menu_button.center = (left_panel.x + 195, left_panel.y + 550)
 
-        # BUTTON TEXTS
-        #set_text = self.game.sub_font.render("SET", True, WHITE)
-        sethint_text1 = self.game.sub_font.render('P1 press Space', True, WHITE)
-        sethint_text2 = self.game.sub_font.render('P2 press Enter', True, WHITE)
-        #plus_text = self.game.sub_font.render("PLUS", True, WHITE)
+        # Button texts
+        sethint_text1 = self.game.sub_font.render("P1 press Space", True, WHITE)
+        sethint_text2 = self.game.sub_font.render("P2 press Enter", True, WHITE)
         hint_text = self.game.sub_font.render("HINT", True, WHITE)
+        restart_text = self.game.small_font.render("RESTART", True, WHITE)
+        menu_text = self.game.small_font.render("MENU", True, WHITE)
 
-        # DRAW BUTTONS
-        # -------------------------
-
-        # Disabled the hover effect for the SET box so it acts just as a label
-        pygame.draw.rect(
-            screen,
-            DARK,
-            self.setbutton,
-            border_radius=12
+        # SET info box
+        pygame.draw.rect(screen, DARK, self.setbutton, border_radius=12)
+        screen.blit(
+            sethint_text1,
+            sethint_text1.get_rect(center=(self.setbutton.centerx, self.setbutton.centery - 15))
         )
-        #screen.blit(set_text,
-        #           set_text.get_rect(center=(self.setbutton.centerx, self.setbutton.centery - 15)))
-        screen.blit(sethint_text1,
-                    sethint_text1.get_rect(center=(self.setbutton.centerx, self.setbutton.centery - 15)))
-        screen.blit(sethint_text2,
-                    sethint_text2.get_rect(center=(self.setbutton.centerx, self.setbutton.centery + 15)))
-
-        '''
-        pygame.draw.rect(
-            screen,
-            LIGHT if self.plus.collidepoint(mouse) else DARK,
-            self.plus,
-            border_radius=12
+        screen.blit(
+            sethint_text2,
+            sethint_text2.get_rect(center=(self.setbutton.centerx, self.setbutton.centery + 15))
         )
-        '''
-        #screen.blit(plus_text, plus_text.get_rect(center=self.plus.center))
 
-        # Draw HINT button
+        # HINT button
         pygame.draw.rect(
             screen,
             LIGHT if self.hint_button.collidepoint(mouse) else DARK,
@@ -263,8 +278,26 @@ class GameScreen:
         )
         screen.blit(hint_text, hint_text.get_rect(center=self.hint_button.center))
 
-        # Timer / message panel
-        message_panel = pygame.Rect(20, 540, 280, 160)  # topleft x, y, width, height
+        # RESTART button
+        pygame.draw.rect(
+            screen,
+            LIGHT if self.restart_button.collidepoint(mouse) else DARK,
+            self.restart_button,
+            border_radius=12
+        )
+        screen.blit(restart_text, restart_text.get_rect(center=self.restart_button.center))
+
+        # MENU button
+        pygame.draw.rect(
+            screen,
+            LIGHT if self.menu_button.collidepoint(mouse) else DARK,
+            self.menu_button,
+            border_radius=12
+        )
+        screen.blit(menu_text, menu_text.get_rect(center=self.menu_button.center))
+
+        # Message panel
+        message_panel = pygame.Rect(20, 630, 280, 80)
         pygame.draw.rect(screen, (44, 44, 62), message_panel, border_radius=12)
         pygame.draw.rect(screen, WHITE, message_panel, 2, border_radius=12)
 
@@ -275,11 +308,10 @@ class GameScreen:
             timer_text = self.game.sub_font.render(
                 f"Time left: {time_left}s", True, WHITE
             )
-            screen.blit(turn_text, (message_panel.x + 20, message_panel.y + 20))
-            screen.blit(timer_text, (message_panel.x + 20, message_panel.y + 60))
+            screen.blit(turn_text, (message_panel.x + 20, message_panel.y + 10))
+            screen.blit(timer_text, (message_panel.x + 20, message_panel.y + 40))
         else:
             wait_text = self.game.sub_font.render("Press set when ready", True, WHITE)
-            screen.blit(wait_text, (message_panel.x + 20, message_panel.y + 20))
-
             timer_text = self.game.sub_font.render(f"Time left: {time_left}s", True, WHITE)
-            screen.blit(timer_text, (message_panel.x + 20, message_panel.y + 60))
+            screen.blit(wait_text, (message_panel.x + 20, message_panel.y + 10))
+            screen.blit(timer_text, (message_panel.x + 20, message_panel.y + 40))
