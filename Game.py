@@ -5,6 +5,7 @@ from screens.GameScreen import GameScreen
 from screens.Rules import RulesScreen
 from screens.WinnerScreen import WinnerScreen
 from screens.TableDisplay import Display_card
+from screens.settings_screen import SettingsScreen
 from utils.set_table import Table
 from screens.Singleplayer import SingleplayerScreen
 from screens.ConfirmScreen import ConfirmScreen
@@ -15,6 +16,8 @@ class Game:
     def __init__(self):
         self.screen = pygame.display.set_mode((1080, 720), pygame.RESIZABLE | pygame.SCALED)
         pygame.mixer.init()
+
+        self.turn_duration_ms = 300000
 
         #create font type and size
         self.font = pygame.font.SysFont("Corbel", 40)
@@ -40,6 +43,7 @@ class Game:
         self.winner_screen = WinnerScreen(self)
         self.confirm_screen = ConfirmScreen(self)
         self.pre_start_screen = PreStartScreen(self)
+        self.settings_screen = SettingsScreen(self)
 
 
         self.current_screen = self.start_screen
@@ -51,6 +55,8 @@ class Game:
         self.p1_score = 0
         self.p2_score = 0
         self.comp_score = 0
+        self.point_gain = 1
+        self.point_loss = 1
 
     def run(self):
         while self.running:

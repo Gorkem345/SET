@@ -3,12 +3,12 @@ from utils.constants import WHITE, DARK, LIGHT
 from screens.TableDisplay import Display_board
 from utils.set_table import Table
 import random
-import time
+from screens.screen import Screen
 
 
-class SingleplayerScreen:
+class SingleplayerScreen(Screen):
     def __init__(self, game):  # self.game_screen = GameScreen(self)
-        self.game = game  # game here is the Game object, so self.game = Game()
+        super().__init__(game) # game here is the Game object, so self.game = Game()
         self.board = Display_board(game)
         # Player interface
         self.setbutton = pygame.Rect(200, 80, 198, 80)
@@ -41,8 +41,8 @@ class SingleplayerScreen:
         # Winner
         self.winner = None
 
-        # Whole game timer: 5 minutes
-        self.game_duration = 301000
+        # Whole game timer: 5 mins (Default)
+        self.game_duration = self.game.turn_duration_ms + 1000
         self.game_start_time = pygame.time.get_ticks()
 
         # Game pause timer
@@ -96,6 +96,8 @@ class SingleplayerScreen:
         self.winner = None
         self.clear_set_timer()
 
+        self.game_duration = self.game.turn_duration_ms + 1000
+
         # Reset the 5-minute game timer (if you are using it here)
         self.game_start_time = pygame.time.get_ticks()
 
@@ -147,9 +149,9 @@ class SingleplayerScreen:
             self.game.table.hinted = []
 
             if self.active_player == 1:
-                self.p1_score -= 1
+                self.p1_score -= self.game.point_loss
             elif self.active_player == 2:
-                self.comp_score -= 1
+                self.comp_score -= self.game.point_loss
 
             self.show_message("Time's up!", 1500)
             self.clear_set_timer()
@@ -252,14 +254,14 @@ class SingleplayerScreen:
                             self.correct_sound.play()
 
                         self.show_message("SET !!!", 1500)
-                        self.comp_score += 1
+                        self.comp_score += self.game.point_gain
                         self.check_winner()
                     else:
                         if self.wrong_sound:
                             self.wrong_sound.play()
 
                         self.show_message("Not a set", 1500)
-                        self.comp_score -= 1
+                        self.comp_score -= self.game.point_loss
 
                     self.clear_set_timer()
                     self.game.table.hinted = []
@@ -274,20 +276,40 @@ class SingleplayerScreen:
         # --- STATE 2: The computer is "thinking" ---
         if self.active_player is None and current_time >= self.comp_target_time and not self.game.table.waiting_for_replace:
 
-            hint_indices = self.game.table.give_set()
+            set_indices = self.game.table.give_set()
 
-            if hint_indices:
+            if set_indices:
                 if self.set_sound and not self.game.table.selection_mode:
                     self.set_sound.play()
                 # 1. Claim the turn! (2 represents the computer)
                 self.start_set_timer(2)
                 self.game.table.handle_start_selection()
 
-                # 2. Put the 3 cards into the to-do list
-                self.comp_clicks_pending = [hint_indices[0], hint_indices[1], hint_indices[2]]
+                # 2. Put the 3 cards into the to-do list, computer can make a mistake
+                a = 1
+                if self.difficulty == "Easy":
+                    a = 5
+                elif self.difficulty == "Normal":
+                    a = 8
+                elif self.difficulty == "Hard":
+                    a = 15
+                randomInt = random.randint(1,a)
+
+                if randomInt == 1:
+                    # Computer makes a mistake
+                    index_1 = (set_indices[0] + random.randint(1,11)) % 12
+                    index_2 = (set_indices[1] + random.randint(1, 11)) % 12
+                    index_3 = (set_indices[2] + random.randint(1, 11)) % 12
+                    while index_1 == index_2 or index_2 == index_3 or index_1 == index_3:
+                        index_2 = (set_indices[1] + random.randint(1,11)) % 12
+                        index_3 = (set_indices[2] + random.randint(1,11)) % 12
+                    self.comp_clicks_pending = [index_1, index_2, index_3]
+                else:
+
+                    self.comp_clicks_pending = [set_indices[0], set_indices[1], set_indices[2]]
 
                 # 3. Wait 0.6 seconds before making the very first click
-                self.comp_next_click_time = current_time + 600
+                self.comp_next_click_time = current_time + 800
 
             else:
                 # No sets on the board, check again in 1 second
@@ -352,10 +374,10 @@ class SingleplayerScreen:
                                         self.show_message("SET", 1500)
 
                                         if self.active_player == 1:
-                                            self.p1_score += 1
+                                            self.p1_score += self.game.point_gain
                                             self.check_winner()
                                         elif self.active_player == 2:
-                                            self.comp_score += 1
+                                            self.comp_score += self.game.point_gain
                                             self.check_winner()
                                     else:
                                         if self.wrong_sound:
@@ -364,9 +386,9 @@ class SingleplayerScreen:
                                         self.show_message("Not a set", 1500)
 
                                         if self.active_player == 1:
-                                            self.p1_score -= 1
+                                            self.p1_score -= self.game.point_loss
                                         elif self.active_player == 2:
-                                            self.comp_score -= 1
+                                            self.comp_score -= self.game.point_loss
 
                                 self.clear_set_timer()
                                 self.game.table.hinted = []

@@ -1,10 +1,10 @@
 import pygame
 from utils.constants import WHITE, DARK, LIGHT
+from screens.screen import Screen
 
-
-class PreStartScreen:
+class PreStartScreen(Screen):
     def __init__(self, game):
-        self.game = game
+        super().__init__(game)
 
         # The target screen we will go to after pressing Continue
         self.next_screen = None
@@ -64,7 +64,7 @@ class PreStartScreen:
         title_text = self.game.title_font.render("Controls", True, WHITE)
         screen.blit(title_text, title_text.get_rect(center=(540, 80)))
 
-        # 1. SPACEBAR (Player 1)
+        # 1. SPACE_BAR (Player 1)
         pygame.draw.rect(screen, WHITE, (150, 180, 240, 60), border_radius=8)
         pygame.draw.rect(screen, (150, 150, 150), (150, 180, 240, 60), width=4, border_radius=8)
         space_text = self.game.sub_font.render("SPACEBAR", True, DARK)

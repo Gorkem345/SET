@@ -1,10 +1,11 @@
 import pygame
 from utils.constants import WHITE, LIGHT, DARK, BG
+from screens.screen import Screen
 
 
-class WinnerScreen:
+class WinnerScreen(Screen):
     def __init__(self, game):
-        self.game = game
+        super().__init__(game)
         self.prev_screen = None
 
         # result panel

@@ -2,11 +2,12 @@ import pygame
 from utils.constants import WHITE, DARK, LIGHT
 from screens.TableDisplay import Display_board
 from utils.set_table import Table
+from screens.screen import Screen
 
 
-class GameScreen:
+class GameScreen(Screen):
     def __init__(self, game):  # self.game_screen = GameScreen(self)
-        self.game = game  # game here is the Game object, so self.game = Game()
+        super().__init__(game)  # game here is the Game object, so self.game = Game()
         self.board = Display_board(game)
 
         # UI buttons
@@ -26,8 +27,8 @@ class GameScreen:
         self.set_time_limit = 15000
         self.set_start_time = 0
 
-        # Whole game timer: 5 minutes
-        self.game_duration = 301000
+        # Whole game timer: 5 minutes (Default)
+        self.game_duration = self.game.turn_duration_ms + 1000
         self.game_start_time = pygame.time.get_ticks()
         #remember when the GameScreen is created not the time when you hit multiplayer play
 
@@ -98,9 +99,9 @@ class GameScreen:
             self.game.table.hinted = []
 
             if self.active_player == 1:
-                self.p1_score -= 1
+                self.p1_score -= self.game.point_loss
             elif self.active_player == 2:
-                self.p2_score -= 1
+                self.p2_score -= self.game.point_loss
 
             self.show_message("Time's up!", 1500)
             self.clear_set_timer()
@@ -134,6 +135,8 @@ class GameScreen:
         self.p2_score = 0
         self.winner = None
         self.clear_set_timer()
+
+        self.game_duration = self.game.turn_duration_ms + 1000
 
         self.game_start_time = pygame.time.get_ticks()
 
@@ -285,10 +288,10 @@ class GameScreen:
                                         self.show_message("SET !!!", 1500)
 
                                         if self.active_player == 1:
-                                            self.p1_score += 1
+                                            self.p1_score += self.game.point_gain
                                             self.check_winner()
                                         elif self.active_player == 2:
-                                            self.p2_score += 1
+                                            self.p2_score += self.game.point_gain
                                             self.check_winner()
                                     else:
                                         # Play Wrong Sound
@@ -298,9 +301,9 @@ class GameScreen:
                                         self.show_message("Not a set", 1500)
 
                                         if self.active_player == 1:
-                                            self.p1_score -= 1
+                                            self.p1_score -= self.game.point_loss
                                         elif self.active_player == 2:
-                                            self.p2_score -= 1
+                                            self.p2_score -= self.game.point_loss
 
                                 # Stop the timer and end the turn
                                 self.clear_set_timer()
