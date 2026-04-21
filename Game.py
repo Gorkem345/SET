@@ -84,5 +84,4 @@ class Game:
         sys.exit()
 
 if __name__ == "__main__":
-    Game().run() #it call run function ->while loop
-                  # ->the mouse click or keyboard type will be captured and pass to handle_event function in StartScreen
+    Game().run() # Game loop
