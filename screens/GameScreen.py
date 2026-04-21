@@ -224,7 +224,7 @@ class GameScreen:
             if event.type == pygame.KEYDOWN:
                 # Player 1 hits SPACEBAR
                 if event.key == pygame.K_SPACE:
-                    if self.set_sound:
+                    if self.set_sound and not self.game.table.selection_mode:
                         self.set_sound.play()
                     if self.active_player is None:
                         self.start_set_timer(1)
@@ -232,7 +232,7 @@ class GameScreen:
 
                 # Player 2 hits ENTER (Return)
                 elif event.key == pygame.K_RETURN:
-                    if self.set_sound:
+                    if self.set_sound and not self.game.table.selection_mode:
                         self.set_sound.play()
                     if self.active_player is None:
                         self.start_set_timer(2)

@@ -272,7 +272,7 @@ class SingleplayerScreen:
             hint_indices = self.game.table.give_set()
 
             if hint_indices:
-                if self.set_sound:
+                if self.set_sound and not self.game.table.selection_mode:
                     self.set_sound.play()
                 # 1. Claim the turn! (2 represents the computer)
                 self.start_set_timer(2)
@@ -296,7 +296,7 @@ class SingleplayerScreen:
             if event.type == pygame.KEYDOWN:
                 # Player 1 hits SPACEBAR
                 if event.key == pygame.K_SPACE:
-                    if self.set_sound:
+                    if self.set_sound and not self.game.table.selection_mode:
                         self.set_sound.play()
                     if self.active_player is None:
                         self.start_set_timer(1)
