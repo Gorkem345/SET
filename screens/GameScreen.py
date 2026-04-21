@@ -282,6 +282,8 @@ class GameScreen:
                                         if self.correct_sound:
                                             self.correct_sound.play()
 
+                                        self.show_message("SET !!!", 1500)
+
                                         if self.active_player == 1:
                                             self.p1_score += 1
                                             self.check_winner()
@@ -292,6 +294,8 @@ class GameScreen:
                                         # Play Wrong Sound
                                         if self.wrong_sound:
                                             self.wrong_sound.play()
+
+                                        self.show_message("Not a set", 1500)
 
                                         if self.active_player == 1:
                                             self.p1_score -= 1

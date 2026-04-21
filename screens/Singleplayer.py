@@ -41,8 +41,8 @@ class SingleplayerScreen:
         # Winner
         self.winner = None
 
-        # Whole game timer: 10 minutes
-        self.game_duration = 601000
+        # Whole game timer: 5 minutes
+        self.game_duration = 301000
         self.game_start_time = pygame.time.get_ticks()
 
         # Game pause timer
@@ -112,7 +112,7 @@ class SingleplayerScreen:
         # Completely Reset the Computer
         self.reset_computer_timer()  # Give it a fresh 8-20 seconds
         self.comp_clicks_pending = []  # Clear any queued clicks
-        self.computer_showing_set = False  # Stop it from showing old hints
+        #self.computer_showing_set = False  # Stop it from showing old hints
 
     def start_set_timer(self, player):
         """Start the 15-second answer period for one player."""
@@ -248,12 +248,19 @@ class SingleplayerScreen:
                 # Did we just click the 3rd and final card?
                 if not self.game.table.selection_mode:
                     if forms_set:
-                        if hasattr(self, 'correct_sound') and self.correct_sound:
+                        if self.correct_sound:
                             self.correct_sound.play()
+
+                        self.show_message("SET !!!", 1500)
                         self.comp_score += 1
                         self.check_winner()
+                    else:
+                        if self.wrong_sound:
+                            self.wrong_sound.play()
 
-                    # Turn is over, reset everything
+                        self.show_message("Not a set", 1500)
+                        self.comp_score -= 1
+
                     self.clear_set_timer()
                     self.game.table.hinted = []
 
@@ -337,11 +344,13 @@ class SingleplayerScreen:
 
                             # If handle_click finished processing 3 cards, selection_mode will turn False
                             if not self.game.table.selection_mode:
-                                # (Ideally, you check if they actually got it right here to award points)
                                 if forms_set is not None:
                                     if forms_set:
                                         if self.correct_sound:
                                             self.correct_sound.play()
+
+                                        self.show_message("SET", 1500)
+
                                         if self.active_player == 1:
                                             self.p1_score += 1
                                             self.check_winner()
@@ -351,13 +360,15 @@ class SingleplayerScreen:
                                     else:
                                         if self.wrong_sound:
                                             self.wrong_sound.play()
+
+                                        self.show_message("Not a set", 1500)
+
                                         if self.active_player == 1:
                                             self.p1_score -= 1
                                         elif self.active_player == 2:
                                             self.comp_score -= 1
-                                # Stop the timer and end the turn
+
                                 self.clear_set_timer()
-                                # Clear hints
                                 self.game.table.hinted = []
 
                 elif event.button == 3:
