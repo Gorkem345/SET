@@ -3,55 +3,19 @@ from utils.constants import WHITE, DARK, LIGHT
 from screens.TableDisplay import Display_board
 from utils.set_table import Table
 import random
-from screens.screen import Screen
+from screens.PlayScreen import PlayScreen
 
 
-class SingleplayerScreen(Screen):
+class SingleplayerScreen(PlayScreen):
     def __init__(self, game):  # self.game_screen = GameScreen(self)
-        super().__init__(game) # game here is the Game object, so self.game = Game()
-        self.board = Display_board(game)
-        # Player interface
-        self.setbutton = pygame.Rect(200, 80, 198, 80)
+        super().__init__(game)
 
         self.difficulty = "Normal"
 
-        # testing button
-        #self.plus = pygame.Rect(500, 80, 100, 40)
-
-        # HINT button
-        self.hint_button = pygame.Rect(0, 0, 100, 40)
-
-        # --- NEW BUTTONS ---
-        self.restart_button = pygame.Rect(0, 0, 100, 50)
-        self.menu_button = pygame.Rect(0, 0, 100, 50)
-
-        # -----------------------------
         # Score system
-        # -----------------------------
         self.p1_score = 0  # initial score
+        self.p2_score = 0
         self.comp_score = 0  # computer's score
-
-        # Which player pressed SET?
-        self.active_player = None
-
-        # Timer settings
-        self.set_time_limit = 15000  # 15000 milliseconds = 15 seconds
-        self.set_start_time = 0
-
-        # Winner
-        self.winner = None
-
-        # Whole game timer: 5 mins (Default)
-        self.game_duration = self.game.turn_duration_ms + 1000
-        self.game_start_time = pygame.time.get_ticks()
-
-        # Game pause timer
-        self.paused = False
-        self.pause_start_time = 0
-
-        # Message panel
-        self.status_message = "Press set when ready"
-        self.message_end_time = 0
 
         # Computer Timer setup
         self.comp_target_time = 0
@@ -60,123 +24,21 @@ class SingleplayerScreen(Screen):
         self.comp_clicks_pending = []  # The list of cards it needs to click
         self.comp_next_click_time = 0  # When it is allowed to click the next card
 
-        # load table background
-        # I only want the center part of the image
-        img = pygame.image.load("images/table.png").convert()
-        img_w, img_h = img.get_size()
-        screen_w, screen_h = 1080, 720
-        x = (img_w - screen_w) // 2
-        y = (img_h - screen_h) // 2
-
-        self.background = img.subsurface((x, y, screen_w, screen_h))
-
-        try:
-            self.correct_sound = pygame.mixer.Sound("sounds/correct.wav")
-            self.wrong_sound = pygame.mixer.Sound("sounds/wrong.wav")
-            self.select_sound = pygame.mixer.Sound("sounds/select.wav")
-            self.set_sound = pygame.mixer.Sound("sounds/set.wav")
-
-            # Optional: adjust volume (0.0 to 1.0)
-            self.correct_sound.set_volume(0.3)
-            self.wrong_sound.set_volume(0.5)
-            self.select_sound.set_volume(0.4)
-            self.set_sound.set_volume(0.5)
-
-        except Exception as e:
-            print(f"Could not load sounds: {e}")
-            self.correct_sound = None
-            self.wrong_sound = None
-            self.set_sound = None
-            self.select_sound = None
 
     def reset_game_screen(self):
         """Resets all scores, timers, and the computer's brain for a fresh game."""
+        super().reset_game_screen()
         self.p1_score = 0
         self.comp_score = 0
-        self.winner = None
-        self.clear_set_timer()
-
-        self.game_duration = self.game.turn_duration_ms + 1000
-
-        # Reset the 5-minute game timer (if you are using it here)
-        self.game_start_time = pygame.time.get_ticks()
-
-        # very important: clear pause state
-        self.paused = False
-        self.pause_start_time = 0
-
-        # reset table
-        self.game.table.selection_mode = False
-        self.game.table.selected = []
-        self.game.table.hinted = []
-        self.game.table.handle_start_game()
 
         # Completely Reset the Computer
         self.reset_computer_timer()  # Give it a fresh 8-20 seconds
         self.comp_clicks_pending = []  # Clear any queued clicks
-        #self.computer_showing_set = False  # Stop it from showing old hints
 
-    def start_set_timer(self, player):
-        """Start the 15-second answer period for one player."""
-        self.active_player = player
-        self.set_start_time = pygame.time.get_ticks()  # it is the time pass when the game start until you click SET button
-        # a = f'set_start_time: {self.set_start_time}' #Debug
-        # print(a)
 
     def clear_set_timer(self):
-        """Stop the answer period."""
-        self.active_player = None
-        self.set_start_time = 0
-
+        super().clear_set_timer()
         self.reset_computer_timer()
-
-    def get_time_left(self):
-        """Return remaining time in seconds. If no timer, return 15''."""
-
-        if self.active_player is None:
-            return "%d" % 15
-
-        current_time = pygame.time.get_ticks()
-        elapsed = current_time - self.set_start_time
-        remaining = self.set_time_limit - elapsed
-
-        if remaining <= 0:
-            if self.wrong_sound:
-                self.wrong_sound.play()
-            # Clear the highlighted cards when time is up!
-            self.game.table.selection_mode = False
-            self.game.table.selected = []
-            self.game.table.hinted = []
-
-            if self.active_player == 1:
-                self.p1_score -= self.game.point_loss
-            elif self.active_player == 2:
-                self.comp_score -= self.game.point_loss
-
-            self.show_message("Time's up!", 1500)
-            self.clear_set_timer()
-            return 0
-
-        return remaining // 1000 + 1
-    #######to make sure single player have the same function as multiplayer
-    def get_game_time_left(self):
-        if self.paused:
-            current_time = self.pause_start_time
-        else:
-            current_time = pygame.time.get_ticks()
-
-        elapsed = current_time - self.game_start_time
-        remaining = self.game_duration - elapsed
-
-        if remaining <= 0:
-            return 0
-
-        return remaining // 1000
-
-    def pause_game_timer(self):
-        if not self.paused:
-            self.paused = True
-            self.pause_start_time = pygame.time.get_ticks()
 
     def resume_game_timer(self):
         if self.paused:
@@ -185,9 +47,6 @@ class SingleplayerScreen(Screen):
             self.comp_target_time += paused_duration
             self.paused = False
 
-    def show_message(self, text, duration=1500):
-        self.status_message = text
-        self.message_end_time = pygame.time.get_ticks() + duration
 
     def check_game_timeout(self):
         if self.get_game_time_left() <= 0:
