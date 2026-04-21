@@ -53,16 +53,19 @@ class GameScreen:
         try:
             self.correct_sound = pygame.mixer.Sound("sounds/correct.wav")
             self.wrong_sound = pygame.mixer.Sound("sounds/wrong.wav")
+            self.select_sound = pygame.mixer.Sound("sounds/select.wav")
             self.set_sound = pygame.mixer.Sound("sounds/set.wav")
 
             # Optional: adjust volume (0.0 to 1.0)
-            self.correct_sound.set_volume(0.5)
+            self.correct_sound.set_volume(0.3)
             self.wrong_sound.set_volume(0.5)
+            self.select_sound.set_volume(0.4)
             self.set_sound.set_volume(0.5)
         except Exception as e:
             print(f"Could not load sounds: {e}")
             self.correct_sound = None
             self.wrong_sound = None
+            self.select_sound = None
             self.set_sound = None
 
     def start_set_timer(self, player):
@@ -246,13 +249,15 @@ class GameScreen:
 
                     # Restart
                     elif self.restart_button.collidepoint(mouse):
-                        self.reset_game_screen()
+                        self.pause_game_timer()
+                        self.game.confirm_screen.open("restart")
+                        self.game.current_screen = self.game.confirm_screen
 
                     # Back to menu
                     elif self.menu_button.collidepoint(mouse):
-
-                        self.game.current_screen = self.game.start_screen
-                        self.reset_game_screen()
+                        self.pause_game_timer()
+                        self.game.confirm_screen.open("menu")
+                        self.game.current_screen = self.game.confirm_screen
 
 
                     # 3. Check if they clicked a CARD
@@ -261,6 +266,8 @@ class GameScreen:
                         clicked_index = self.board.get_clicked_card_index(mouse)
 
                         if clicked_index is not None:
+                            if self.select_sound:
+                                self.select_sound.play()
                             # Pass the click to your Table logic
                             forms_set = self.game.table.handle_click(clicked_index)
 
@@ -322,6 +329,12 @@ class GameScreen:
         p1_score_text = self.game.sub_font.render(f"Player 1:   {self.p1_score}", True, WHITE)
         p2_score_text = self.game.sub_font.render(f"Player 2:   {self.p2_score}", True, WHITE)
 
+
+        # Deck info
+        cards_left = len(self.game.table.deck)
+
+        deck_count_text = self.game.sub_font.render(f"Cards in deck: {cards_left}", True, WHITE)
+
         minutes = game_time_left // 60
         seconds = game_time_left % 60
         game_duration_text = self.game.sub_font.render(
@@ -333,9 +346,12 @@ class GameScreen:
         screen.blit(p2_score_text, (left_panel.x + 20, left_panel.y + 125))
         screen.blit(game_duration_text, (left_panel.x + 20, left_panel.y + 185))
 
+
+        screen.blit(deck_count_text, (left_panel.x + 20, left_panel.y + 235))
+
         # Button positions
-        self.setbutton.center = (left_panel.centerx, left_panel.y + 285)
-        self.hint_button.center = (left_panel.centerx, left_panel.y + 360)
+        self.setbutton.center = (left_panel.centerx, left_panel.y + 345)
+        self.hint_button.center = (left_panel.centerx, left_panel.y + 420)
         self.restart_button.center = (left_panel.x + 75, left_panel.y + 550)
         self.menu_button.center = (left_panel.x + 195, left_panel.y + 550)
 
