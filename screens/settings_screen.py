@@ -49,13 +49,16 @@ class SettingsScreen:
         mouse = pygame.mouse.get_pos()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:  # Sol tık
+            if event.button == 1:  # Left click
                 if self.rect_duration.collidepoint(mouse):
                     self.active_field = 'duration'
+                    self.text_duration = ""
                 elif self.rect_gain.collidepoint(mouse):
                     self.active_field = 'gain'
+                    self.text_gain = ""
                 elif self.rect_loss.collidepoint(mouse):
                     self.active_field = 'loss'
+                    self.text_loss = ""
                 else:
                     self.active_field = None  # Remove the selection when pressed somewhere else
 
