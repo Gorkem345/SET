@@ -61,14 +61,18 @@ class SingleplayerScreen:
         try:
             self.correct_sound = pygame.mixer.Sound("sounds/correct.wav")
             self.wrong_sound = pygame.mixer.Sound("sounds/wrong.wav")
+            self.set_sound = pygame.mixer.Sound("sounds/set.wav")
 
             # Optional: adjust volume (0.0 to 1.0)
             self.correct_sound.set_volume(0.4)
             self.wrong_sound.set_volume(0.5)
+            self.set_sound.set_volume(0.5)
+
         except Exception as e:
             print(f"Could not load sounds: {e}")
             self.correct_sound = None
             self.wrong_sound = None
+            self.set_sound = None
 
     def reset_game_screen(self):
         """Resets all scores, timers, and the computer's brain for a fresh game."""
@@ -206,6 +210,8 @@ class SingleplayerScreen:
             hint_indices = self.game.table.give_set()
 
             if hint_indices:
+                if self.set_sound:
+                    self.set_sound.play()
                 # 1. Claim the turn! (2 represents the computer)
                 self.start_set_timer(2)
                 self.game.table.handle_start_selection()
@@ -228,6 +234,8 @@ class SingleplayerScreen:
             if event.type == pygame.KEYDOWN:
                 # Player 1 hits SPACEBAR
                 if event.key == pygame.K_SPACE:
+                    if self.set_sound:
+                        self.set_sound.play()
                     if self.active_player is None:
                         self.start_set_timer(1)
                         self.game.table.handle_start_selection()
