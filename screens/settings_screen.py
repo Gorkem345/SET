@@ -1,5 +1,5 @@
 import pygame
-from utils.constants import WHITE, DARK, LIGHT
+from utils.constants import WHITE, DARK, LIGHT, BLUE
 
 
 class SettingsScreen:
@@ -13,21 +13,22 @@ class SettingsScreen:
 
         self.active_field = None
 
-        # Drawing the boxes
-        center_x = 540
+        # LAYOUT COORDINATES
+        # The center X coordinate for the input boxes (buttons)
+        box_center_x = 475
 
-        self.rect_duration = pygame.Rect(0, 0, 150, 60)
-        self.rect_duration.center = (center_x, 220)
+        self.rect_duration = pygame.Rect(0, 0, 100, 50)
+        self.rect_duration.center = (box_center_x, 220)
 
-        self.rect_gain = pygame.Rect(0, 0, 150, 60)
-        self.rect_gain.center = (center_x, 360)
+        self.rect_gain = pygame.Rect(0, 0, 100, 50)
+        self.rect_gain.center = (box_center_x, 360)
 
-        self.rect_loss = pygame.Rect(0, 0, 150, 60)
-        self.rect_loss.center = (center_x, 500)
+        self.rect_loss = pygame.Rect(0, 0, 100, 50)
+        self.rect_loss.center = (box_center_x, 500)
 
-        # SAVE BUTTON
+        # SAVE BUTTON (Aligned to the left margin at x=100)
         self.save_button = pygame.Rect(0, 0, 260, 60)
-        self.save_button.center = (center_x, 630)
+        self.save_button.center = (540, 630)
 
     def save_and_exit(self):
         # If left empty assign the default values
@@ -109,14 +110,14 @@ class SettingsScreen:
         screen.fill((44, 44, 62))
         mouse = pygame.mouse.get_pos()
 
-        # Header
+        # Header (Kept centered at the top)
         title_text = self.game.title_font.render("Settings", True, WHITE)
         screen.blit(title_text, title_text.get_rect(center=(540, 80)))
 
         def draw_input_section(rect, label_text, value_text, is_active):
-            # Label
-            label = self.game.sub_font.render(label_text, True, WHITE)
-            screen.blit(label, label.get_rect(center=(rect.centerx, rect.top - 25)))
+            # Label - Now pinned to the left margin (X=100) and vertically centered with the box
+            label = self.game.sub_font.render(label_text, True, BLUE)
+            screen.blit(label, label.get_rect(midleft=(100, rect.centery)))
 
             # The box
             box_color = LIGHT if is_active else DARK
@@ -128,11 +129,11 @@ class SettingsScreen:
             else:
                 pygame.draw.rect(screen, WHITE, rect, width=2, border_radius=12)
 
-            # Value rendered
+            # Value rendered inside the box
             val_surf = self.game.font.render(value_text, True, WHITE)
             screen.blit(val_surf, val_surf.get_rect(center=rect.center))
 
-        # Draw
+        # Draw the inputs side-by-side
         draw_input_section(self.rect_duration, "Game Duration (Minutes) [1-20]", self.text_duration,
                            self.active_field == 'duration')
         draw_input_section(self.rect_gain, "Points Earned [0-10]", self.text_gain, self.active_field == 'gain')
