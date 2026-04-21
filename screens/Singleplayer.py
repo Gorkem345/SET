@@ -223,13 +223,13 @@ class SingleplayerScreen:
         """Give the computer a random number of seconds to 'think'."""
         # Computer takes between 8 and 30 seconds depending on difficulty level
         if self.difficulty == "Easy":
-            delay = random.randint(18000, 30000)
+            delay = random.randint(20000, 32000)
             self.comp_target_time = pygame.time.get_ticks() + delay
         if self.difficulty == "Normal":
-            delay = random.randint(12000, 20000)
+            delay = random.randint(14000, 22000)
             self.comp_target_time = pygame.time.get_ticks() + delay
         if self.difficulty == "Hard":
-            delay = random.randint(8000, 12000)
+            delay = random.randint(10000, 14000)
             self.comp_target_time = pygame.time.get_ticks() + delay
 
     def update_computer(self):
