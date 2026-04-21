@@ -315,6 +315,12 @@ class GameScreen:
         p1_score_text = self.game.sub_font.render(f"Player 1:   {self.p1_score}", True, WHITE)
         p2_score_text = self.game.sub_font.render(f"Player 2:   {self.p2_score}", True, WHITE)
 
+
+        # Deck info
+        cards_left = len(self.game.table.deck)
+
+        deck_count_text = self.game.sub_font.render(f"Cards in deck: {cards_left}", True, WHITE)
+
         minutes = game_time_left // 60
         seconds = game_time_left % 60
         game_duration_text = self.game.sub_font.render(
@@ -326,9 +332,12 @@ class GameScreen:
         screen.blit(p2_score_text, (left_panel.x + 20, left_panel.y + 125))
         screen.blit(game_duration_text, (left_panel.x + 20, left_panel.y + 185))
 
+
+        screen.blit(deck_count_text, (left_panel.x + 20, left_panel.y + 235))
+
         # Button positions
-        self.setbutton.center = (left_panel.centerx, left_panel.y + 285)
-        self.hint_button.center = (left_panel.centerx, left_panel.y + 360)
+        self.setbutton.center = (left_panel.centerx, left_panel.y + 345)
+        self.hint_button.center = (left_panel.centerx, left_panel.y + 420)
         self.restart_button.center = (left_panel.x + 75, left_panel.y + 550)
         self.menu_button.center = (left_panel.x + 195, left_panel.y + 550)
 
