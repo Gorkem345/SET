@@ -1,4 +1,4 @@
-from utils.image_dictionary import cards
+from utils.card_deck import cards
 import random
 import copy
 import pygame
