@@ -98,9 +98,9 @@ class GameScreen:
             self.game.table.hinted = []
 
             if self.active_player == 1:
-                self.p1_score -= 1
+                self.p1_score -= self.game.point_loss
             elif self.active_player == 2:
-                self.p2_score -= 1
+                self.p2_score -= self.game.point_loss
 
             self.show_message("Time's up!", 1500)
             self.clear_set_timer()
@@ -285,10 +285,10 @@ class GameScreen:
                                         self.show_message("SET !!!", 1500)
 
                                         if self.active_player == 1:
-                                            self.p1_score += 1
+                                            self.p1_score += self.game.point_gain
                                             self.check_winner()
                                         elif self.active_player == 2:
-                                            self.p2_score += 1
+                                            self.p2_score += self.game.point_gain
                                             self.check_winner()
                                     else:
                                         # Play Wrong Sound
@@ -298,9 +298,9 @@ class GameScreen:
                                         self.show_message("Not a set", 1500)
 
                                         if self.active_player == 1:
-                                            self.p1_score -= 1
+                                            self.p1_score -= self.game.point_loss
                                         elif self.active_player == 2:
-                                            self.p2_score -= 1
+                                            self.p2_score -= self.game.point_loss
 
                                 # Stop the timer and end the turn
                                 self.clear_set_timer()

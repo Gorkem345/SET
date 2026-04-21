@@ -147,9 +147,9 @@ class SingleplayerScreen:
             self.game.table.hinted = []
 
             if self.active_player == 1:
-                self.p1_score -= 1
+                self.p1_score -= self.game.point_loss
             elif self.active_player == 2:
-                self.comp_score -= 1
+                self.comp_score -= self.game.point_loss
 
             self.show_message("Time's up!", 1500)
             self.clear_set_timer()
@@ -252,14 +252,14 @@ class SingleplayerScreen:
                             self.correct_sound.play()
 
                         self.show_message("SET !!!", 1500)
-                        self.comp_score += 1
+                        self.comp_score += self.game.point_gain
                         self.check_winner()
                     else:
                         if self.wrong_sound:
                             self.wrong_sound.play()
 
                         self.show_message("Not a set", 1500)
-                        self.comp_score -= 1
+                        self.comp_score -= self.game.point_loss
 
                     self.clear_set_timer()
                     self.game.table.hinted = []
@@ -352,10 +352,10 @@ class SingleplayerScreen:
                                         self.show_message("SET", 1500)
 
                                         if self.active_player == 1:
-                                            self.p1_score += 1
+                                            self.p1_score += self.game.point_gain
                                             self.check_winner()
                                         elif self.active_player == 2:
-                                            self.comp_score += 1
+                                            self.comp_score += self.game.point_gain
                                             self.check_winner()
                                     else:
                                         if self.wrong_sound:
@@ -364,9 +364,9 @@ class SingleplayerScreen:
                                         self.show_message("Not a set", 1500)
 
                                         if self.active_player == 1:
-                                            self.p1_score -= 1
+                                            self.p1_score -= self.game.point_loss
                                         elif self.active_player == 2:
-                                            self.comp_score -= 1
+                                            self.comp_score -= self.game.point_loss
 
                                 self.clear_set_timer()
                                 self.game.table.hinted = []
