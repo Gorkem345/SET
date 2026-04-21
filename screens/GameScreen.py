@@ -239,13 +239,15 @@ class GameScreen:
 
                     # Restart
                     elif self.restart_button.collidepoint(mouse):
-                        self.reset_game_screen()
+                        self.pause_game_timer()
+                        self.game.confirm_screen.open("restart")
+                        self.game.current_screen = self.game.confirm_screen
 
                     # Back to menu
                     elif self.menu_button.collidepoint(mouse):
-
-                        self.game.current_screen = self.game.start_screen
-                        self.reset_game_screen()
+                        self.pause_game_timer()
+                        self.game.confirm_screen.open("menu")
+                        self.game.current_screen = self.game.confirm_screen
 
 
                     # 3. Check if they clicked a CARD
