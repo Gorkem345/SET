@@ -41,8 +41,8 @@ class SingleplayerScreen:
         # Winner
         self.winner = None
 
-        # Whole game timer: 5 minutes
-        self.game_duration = 301000
+        # Whole game timer: 10 minutes
+        self.game_duration = 601000
         self.game_start_time = pygame.time.get_ticks()
 
         # Game pause timer
@@ -392,7 +392,7 @@ class SingleplayerScreen:
             f"Game time: {minutes}:{seconds:02}", True, WHITE
         )
 
-        screen.blit(score_text, (left_panel.x + 20, left_panel.y + 45))
+        screen.blit(score_text, (left_panel.x + 20, left_panel.y + 30))
         screen.blit(p1_score_text, (left_panel.x + 20, left_panel.y + 85))
         screen.blit(comp_score_text, (left_panel.x + 20, left_panel.y + 125))
         screen.blit(game_duration_text, (left_panel.x + 20, left_panel.y + 185))

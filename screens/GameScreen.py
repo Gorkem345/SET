@@ -334,7 +334,7 @@ class GameScreen:
             f"Game time: {minutes}:{seconds:02}", True, WHITE
         )
 
-        screen.blit(score_text, (left_panel.x + 20, left_panel.y + 45))
+        screen.blit(score_text, (left_panel.x + 20, left_panel.y + 30))
         screen.blit(p1_score_text, (left_panel.x + 20, left_panel.y + 85))
         screen.blit(p2_score_text, (left_panel.x + 20, left_panel.y + 125))
         screen.blit(game_duration_text, (left_panel.x + 20, left_panel.y + 185))
