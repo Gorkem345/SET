@@ -152,6 +152,12 @@ class Table:
             message += "Card " + str(index) + ": " +self.cards_on_table[index].__repr__()
         return message
 
+    def update(self):
+        """Checks continuous state updates like timers."""
+        if self.waiting_for_replace and pygame.time.get_ticks() >= self.replace_time:
+            self.waiting_for_replace = False
+            self.replace_selection()
+
 # Looks at the first 2 cards and finds the required card to form a set. Compares the third card to the required card,
 # if they are the same, returns True; otherwise, returns False.
 def is_set(card1, card2, card3):
