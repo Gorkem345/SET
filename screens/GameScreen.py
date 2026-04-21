@@ -26,8 +26,8 @@ class GameScreen:
         self.set_time_limit = 15000
         self.set_start_time = 0
 
-        # Whole game timer: 10 minutes
-        self.game_duration = 601000
+        # Whole game timer: 5 minutes
+        self.game_duration = 301000
         self.game_start_time = pygame.time.get_ticks()
         #remember when the GameScreen is created not the time when you hit multiplayer play
 
@@ -54,16 +54,19 @@ class GameScreen:
             self.correct_sound = pygame.mixer.Sound("sounds/correct.wav")
             self.wrong_sound = pygame.mixer.Sound("sounds/wrong.wav")
             self.select_sound = pygame.mixer.Sound("sounds/select.wav")
+            self.set_sound = pygame.mixer.Sound("sounds/set.wav")
 
             # Optional: adjust volume (0.0 to 1.0)
             self.correct_sound.set_volume(0.3)
             self.wrong_sound.set_volume(0.5)
             self.select_sound.set_volume(0.4)
+            self.set_sound.set_volume(0.5)
         except Exception as e:
             print(f"Could not load sounds: {e}")
             self.correct_sound = None
             self.wrong_sound = None
             self.select_sound = None
+            self.set_sound = None
 
     def start_set_timer(self, player):
         """Start the 15-second answer period for one player."""
@@ -87,6 +90,8 @@ class GameScreen:
         remaining = self.set_time_limit - elapsed
 
         if remaining <= 0:
+            if self.wrong_sound:
+                self.wrong_sound.play()
             # Clear the highlighted cards when time is up!
             self.game.table.selection_mode = False
             self.game.table.selected = []
@@ -219,12 +224,16 @@ class GameScreen:
             if event.type == pygame.KEYDOWN:
                 # Player 1 hits SPACEBAR
                 if event.key == pygame.K_SPACE:
+                    if self.set_sound:
+                        self.set_sound.play()
                     if self.active_player is None:
                         self.start_set_timer(1)
                         self.game.table.handle_start_selection()
 
                 # Player 2 hits ENTER (Return)
                 elif event.key == pygame.K_RETURN:
+                    if self.set_sound:
+                        self.set_sound.play()
                     if self.active_player is None:
                         self.start_set_timer(2)
                         self.game.table.handle_start_selection()

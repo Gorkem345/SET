@@ -74,23 +74,29 @@ class SingleplayerScreen:
             self.correct_sound = pygame.mixer.Sound("sounds/correct.wav")
             self.wrong_sound = pygame.mixer.Sound("sounds/wrong.wav")
             self.select_sound = pygame.mixer.Sound("sounds/select.wav")
+            self.set_sound = pygame.mixer.Sound("sounds/set.wav")
 
             # Optional: adjust volume (0.0 to 1.0)
             self.correct_sound.set_volume(0.3)
             self.wrong_sound.set_volume(0.5)
             self.select_sound.set_volume(0.4)
+            self.set_sound.set_volume(0.5)
+
         except Exception as e:
             print(f"Could not load sounds: {e}")
             self.correct_sound = None
             self.wrong_sound = None
+            self.set_sound = None
             self.select_sound = None
 
     def reset_game_screen(self):
+        """Resets all scores, timers, and the computer's brain for a fresh game."""
         self.p1_score = 0
         self.comp_score = 0
         self.winner = None
         self.clear_set_timer()
 
+        # Reset the 5-minute game timer (if you are using it here)
         self.game_start_time = pygame.time.get_ticks()
 
         # very important: clear pause state
@@ -103,9 +109,10 @@ class SingleplayerScreen:
         self.game.table.hinted = []
         self.game.table.handle_start_game()
 
-        # reset computer
-        self.reset_computer_timer()
-        self.comp_clicks_pending = []
+        # Completely Reset the Computer
+        self.reset_computer_timer()  # Give it a fresh 8-20 seconds
+        self.comp_clicks_pending = []  # Clear any queued clicks
+        self.computer_showing_set = False  # Stop it from showing old hints
 
     def start_set_timer(self, player):
         """Start the 15-second answer period for one player."""
@@ -132,6 +139,9 @@ class SingleplayerScreen:
         remaining = self.set_time_limit - elapsed
 
         if remaining <= 0:
+            if self.wrong_sound:
+                self.wrong_sound.play()
+            # Clear the highlighted cards when time is up!
             self.game.table.selection_mode = False
             self.game.table.selected = []
             self.game.table.hinted = []
@@ -262,6 +272,8 @@ class SingleplayerScreen:
             hint_indices = self.game.table.give_set()
 
             if hint_indices:
+                if self.set_sound:
+                    self.set_sound.play()
                 # 1. Claim the turn! (2 represents the computer)
                 self.start_set_timer(2)
                 self.game.table.handle_start_selection()
@@ -284,6 +296,8 @@ class SingleplayerScreen:
             if event.type == pygame.KEYDOWN:
                 # Player 1 hits SPACEBAR
                 if event.key == pygame.K_SPACE:
+                    if self.set_sound:
+                        self.set_sound.play()
                     if self.active_player is None:
                         self.start_set_timer(1)
                         self.game.table.handle_start_selection()
