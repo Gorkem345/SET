@@ -26,8 +26,8 @@ class GameScreen:
         self.set_time_limit = 15000
         self.set_start_time = 0
 
-        # Whole game timer: 10 minutes
-        self.game_duration = 601000
+        # Whole game timer: 5 minutes (Default)
+        self.game_duration = self.game.turn_duration_ms + 1000
         self.game_start_time = pygame.time.get_ticks()
         #remember when the GameScreen is created not the time when you hit multiplayer play
 
@@ -134,6 +134,8 @@ class GameScreen:
         self.p2_score = 0
         self.winner = None
         self.clear_set_timer()
+
+        self.game_duration = self.game.turn_duration_ms + 1000
 
         self.game_start_time = pygame.time.get_ticks()
 

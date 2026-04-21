@@ -38,7 +38,7 @@ class SettingsScreen:
         if self.text_loss == "": self.text_loss = "1"
 
         # Record in self.game
-        self.game.turn_duration_minutes = int(self.text_duration)
+        self.game.turn_duration_ms = int(self.text_duration) * 1000 * 60
         self.game.point_gain = int(self.text_gain)
         self.game.point_loss = int(self.text_loss)
 

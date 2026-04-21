@@ -17,6 +17,8 @@ class Game:
         self.screen = pygame.display.set_mode((1080, 720), pygame.RESIZABLE | pygame.SCALED)
         pygame.mixer.init()
 
+        self.turn_duration_ms = 300000
+
         #create font type and size
         self.font = pygame.font.SysFont("Corbel", 40)
         self.sub_font = pygame.font.SysFont("Corbel", 25)

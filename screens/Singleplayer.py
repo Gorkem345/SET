@@ -3,7 +3,6 @@ from utils.constants import WHITE, DARK, LIGHT
 from screens.TableDisplay import Display_board
 from utils.set_table import Table
 import random
-import time
 
 
 class SingleplayerScreen:
@@ -41,8 +40,8 @@ class SingleplayerScreen:
         # Winner
         self.winner = None
 
-        # Whole game timer: 5 minutes
-        self.game_duration = 301000
+        # Whole game timer: 5 mins (Default)
+        self.game_duration = self.game.turn_duration_ms + 1000
         self.game_start_time = pygame.time.get_ticks()
 
         # Game pause timer
@@ -95,6 +94,8 @@ class SingleplayerScreen:
         self.comp_score = 0
         self.winner = None
         self.clear_set_timer()
+
+        self.game_duration = self.game.turn_duration_ms + 1000
 
         # Reset the 5-minute game timer (if you are using it here)
         self.game_start_time = pygame.time.get_ticks()
