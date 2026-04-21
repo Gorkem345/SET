@@ -88,14 +88,15 @@ class PreStartScreen:
         unselect_text = self.game.sub_font.render("Unselect Cards", True, WHITE)
         screen.blit(unselect_text, unselect_text.get_rect(center=(620, 340)))
 
-        # 3. ENTER KEY (Player 2)
-        pygame.draw.rect(screen, WHITE, (690, 180, 160, 60), border_radius=8)
-        pygame.draw.rect(screen, (150, 150, 150), (690, 180, 160, 60), width=4, border_radius=8)
-        enter_text = self.game.sub_font.render("ENTER", True, DARK)
-        screen.blit(enter_text, enter_text.get_rect(center=(770, 210)))
+        if self.next_screen == self.game.game_screen:
+            # 3. ENTER KEY (Player 2)
+            pygame.draw.rect(screen, WHITE, (690, 180, 160, 60), border_radius=8)
+            pygame.draw.rect(screen, (150, 150, 150), (690, 180, 160, 60), width=4, border_radius=8)
+            enter_text = self.game.sub_font.render("ENTER", True, DARK)
+            screen.blit(enter_text, enter_text.get_rect(center=(770, 210)))
 
-        p2_text = self.game.sub_font.render("Player 2 Call SET", True, WHITE)
-        screen.blit(p2_text, p2_text.get_rect(center=(770, 270)))
+            p2_text = self.game.sub_font.render("Player 2 Call SET", True, WHITE)
+            screen.blit(p2_text, p2_text.get_rect(center=(770, 270)))
 
         if self.next_screen == self.game.singleplayer_screen:
             # --- DIFFICULTY SECTION (BOTTOM) ---
