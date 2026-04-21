@@ -26,8 +26,8 @@ class GameScreen:
         self.set_time_limit = 15000
         self.set_start_time = 0
 
-        # Whole game timer: 5 minutes
-        self.game_duration = 301000
+        # Whole game timer: 10 minutes
+        self.game_duration = 601000
         self.game_start_time = pygame.time.get_ticks()
         #remember when the GameScreen is created not the time when you hit multiplayer play
 
@@ -53,14 +53,17 @@ class GameScreen:
         try:
             self.correct_sound = pygame.mixer.Sound("sounds/correct.wav")
             self.wrong_sound = pygame.mixer.Sound("sounds/wrong.wav")
+            self.select_sound = pygame.mixer.Sound("sounds/select.wav")
 
             # Optional: adjust volume (0.0 to 1.0)
-            self.correct_sound.set_volume(0.5)
+            self.correct_sound.set_volume(0.3)
             self.wrong_sound.set_volume(0.5)
+            self.select_sound.set_volume(0.4)
         except Exception as e:
             print(f"Could not load sounds: {e}")
             self.correct_sound = None
             self.wrong_sound = None
+            self.select_sound = None
 
     def start_set_timer(self, player):
         """Start the 15-second answer period for one player."""
@@ -254,6 +257,8 @@ class GameScreen:
                         clicked_index = self.board.get_clicked_card_index(mouse)
 
                         if clicked_index is not None:
+                            if self.select_sound:
+                                self.select_sound.play()
                             # Pass the click to your Table logic
                             forms_set = self.game.table.handle_click(clicked_index)
 

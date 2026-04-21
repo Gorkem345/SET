@@ -61,14 +61,17 @@ class SingleplayerScreen:
         try:
             self.correct_sound = pygame.mixer.Sound("sounds/correct.wav")
             self.wrong_sound = pygame.mixer.Sound("sounds/wrong.wav")
+            self.select_sound = pygame.mixer.Sound("sounds/select.wav")
 
             # Optional: adjust volume (0.0 to 1.0)
-            self.correct_sound.set_volume(0.4)
+            self.correct_sound.set_volume(0.3)
             self.wrong_sound.set_volume(0.5)
+            self.select_sound.set_volume(0.4)
         except Exception as e:
             print(f"Could not load sounds: {e}")
             self.correct_sound = None
             self.wrong_sound = None
+            self.select_sound = None
 
     def reset_game_screen(self):
         """Resets all scores, timers, and the computer's brain for a fresh game."""
@@ -259,6 +262,8 @@ class SingleplayerScreen:
                         clicked_index = self.board.get_clicked_card_index(mouse)
 
                         if clicked_index is not None and self.active_player != 2:
+                            if self.select_sound:
+                                self.select_sound.play()
                             # Pass the click to your Table logic
                             forms_set = self.game.table.handle_click(clicked_index)
 
