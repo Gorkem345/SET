@@ -32,7 +32,12 @@ class ConfirmScreen:
         if self.pending_action == "menu":
             self.game.game_screen.reset_game_screen()
             self.game.current_screen = self.game.start_screen
-
+        elif self.pending_action == "menu_single":
+            self.game.singleplayer_screen.reset_game_screen()
+            self.game.current_screen = self.game.start_screen
+        elif self.pending_action == "restart_single":
+            self.game.singleplayer_screen.reset_game_screen()
+            self.game.current_screen = self.game.singleplayer_screen
         elif self.pending_action == "restart":
             self.game.game_screen.reset_game_screen()
             self.game.current_screen = self.game.game_screen

@@ -191,22 +191,20 @@ class SingleplayerScreen:
             self.reset_game_screen()
 
     def check_winner(self):
+        if not self.game.table.find_sets():
+            if self.p1_score > self.comp_score:
+                self.game.winner = "Player 1!"
+            elif self.p1_score < self.comp_score:
+                self.game.winner = "Computer!"
+            else:
+                self.game.winner = "Player 1 and Computer!"
 
-        def check_winner(self):
-            if not self.game.table.find_sets():
-                if self.p1_score > self.comp_score:
-                    self.game.winner = "Player 1!"
-                elif self.p1_score < self.comp_score:
-                    self.game.winner = "Computer!"
-                else:
-                    self.game.winner = "Player 1 and Computer!"
+            self.game.p1_score = self.p1_score
+            self.game.comp_score = self.comp_score
+            self.game.winner_screen.prev_screen = self.game.singleplayer_screen
+            self.game.current_screen = self.game.winner_screen
 
-                self.game.p1_score = self.p1_score
-                self.game.comp_score = self.comp_score
-                self.game.winner_screen.prev_screen = self.game.singleplayer_screen
-                self.game.current_screen = self.game.winner_screen
-
-                self.reset_game_screen()
+            self.reset_game_screen()
 
     def reset_computer_timer(self):
         """Give the computer a random number of seconds to 'think'."""
