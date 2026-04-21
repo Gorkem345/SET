@@ -1,7 +1,7 @@
 import pygame
 import sys
 from screens.StartScreen import StartScreen
-from screens.GameScreen import GameScreen
+from screens.Multiplayer import Multiplayer
 from screens.Rules import RulesScreen
 from screens.WinnerScreen import WinnerScreen
 from screens.TableDisplay import Display_card
@@ -38,7 +38,7 @@ class Game:
                                               #save the Game object inside the Startscreen
 
         self.singleplayer_screen = SingleplayerScreen(self)
-        self.game_screen = GameScreen(self)
+        self.game_screen = Multiplayer(self)
         self.rules_screen = RulesScreen(self)
         self.winner_screen = WinnerScreen(self)
         self.confirm_screen = ConfirmScreen(self)
