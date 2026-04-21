@@ -275,20 +275,40 @@ class SingleplayerScreen:
         # --- STATE 2: The computer is "thinking" ---
         if self.active_player is None and current_time >= self.comp_target_time and not self.game.table.waiting_for_replace:
 
-            hint_indices = self.game.table.give_set()
+            set_indices = self.game.table.give_set()
 
-            if hint_indices:
+            if set_indices:
                 if self.set_sound and not self.game.table.selection_mode:
                     self.set_sound.play()
                 # 1. Claim the turn! (2 represents the computer)
                 self.start_set_timer(2)
                 self.game.table.handle_start_selection()
 
-                # 2. Put the 3 cards into the to-do list
-                self.comp_clicks_pending = [hint_indices[0], hint_indices[1], hint_indices[2]]
+                # 2. Put the 3 cards into the to-do list, computer can make a mistake
+                a = 1
+                if self.difficulty == "Easy":
+                    a = 5
+                elif self.difficulty == "Normal":
+                    a = 8
+                elif self.difficulty == "Hard":
+                    a = 15
+                randomInt = random.randint(1,a)
+
+                if randomInt == 1:
+                    # Computer makes a mistake
+                    index_1 = (set_indices[0] + random.randint(1,11)) % 12
+                    index_2 = (set_indices[1] + random.randint(1, 11)) % 12
+                    index_3 = (set_indices[2] + random.randint(1, 11)) % 12
+                    while index_1 == index_2 or index_2 == index_3 or index_1 == index_3:
+                        index_2 = (set_indices[1] + random.randint(1,11)) % 12
+                        index_3 = (set_indices[2] + random.randint(1,11)) % 12
+                    self.comp_clicks_pending = [index_1, index_2, index_3]
+                else:
+
+                    self.comp_clicks_pending = [set_indices[0], set_indices[1], set_indices[2]]
 
                 # 3. Wait 0.6 seconds before making the very first click
-                self.comp_next_click_time = current_time + 600
+                self.comp_next_click_time = current_time + 800
 
             else:
                 # No sets on the board, check again in 1 second
