@@ -59,10 +59,12 @@ class ConfirmScreen:
         pygame.draw.rect(screen, (44, 44, 62), panel, border_radius=16)
         pygame.draw.rect(screen, WHITE, panel, 2, border_radius=16)
 
-        if self.pending_action == "menu":
+        if self.pending_action in ("menu", "menu_single"):
             msg = "Are you sure to go back to menu?"
-        else:
+        elif self.pending_action in ("restart", "restart_single"):
             msg = "Are you sure to restart?"
+        else:
+            msg = "Are you sure?"
 
         seconds_left = self.get_seconds_left()
 
