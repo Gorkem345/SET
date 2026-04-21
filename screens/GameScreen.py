@@ -90,6 +90,8 @@ class GameScreen:
         remaining = self.set_time_limit - elapsed
 
         if remaining <= 0:
+            if self.wrong_sound:
+                self.wrong_sound.play()
             # Clear the highlighted cards when time is up!
             self.game.table.selection_mode = False
             self.game.table.selected = []
