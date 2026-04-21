@@ -7,8 +7,6 @@ class SettingsScreen(Screen):
     def __init__(self, game):
         super().__init__(game)
 
-        self.game = game
-
         # Default settings ### Keep as strings
         self.text_duration = "5"
         self.text_gain = "1"

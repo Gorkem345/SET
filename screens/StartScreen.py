@@ -8,8 +8,7 @@ pygame.init()
 
 class StartScreen(Screen):
     def __init__(self, game):
-        super().__init__(game)
-        self.game = game  # store the Game object inside this Startscreen
+        super().__init__(game) # store the Game object inside this Startscreen
         # because it needs Game, the main controller to run
 
         self.logo = pygame.image.load("images/set_cards.png").convert_alpha()

@@ -8,8 +8,7 @@ from screens.screen import Screen
 
 class SingleplayerScreen(Screen):
     def __init__(self, game):  # self.game_screen = GameScreen(self)
-        super().__init__(game)
-        self.game = game  # game here is the Game object, so self.game = Game()
+        super().__init__(game) # game here is the Game object, so self.game = Game()
         self.board = Display_board(game)
         # Player interface
         self.setbutton = pygame.Rect(200, 80, 198, 80)
