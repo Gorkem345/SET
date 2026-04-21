@@ -1,10 +1,11 @@
 import pygame
 from utils.constants import WHITE, DARK, LIGHT
+from screens.screen import Screen
 
 
-class ConfirmScreen:
+class ConfirmScreen(Screen):
     def __init__(self, game):
-        self.game = game
+        super().__init__(game)
 
         self.yes_button = pygame.Rect(0, 0, 140, 60)
 

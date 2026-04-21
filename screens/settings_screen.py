@@ -1,9 +1,12 @@
 import pygame
 from utils.constants import WHITE, DARK, LIGHT, BLUE
+from screens.screen import Screen
 
 
-class SettingsScreen:
+class SettingsScreen(Screen):
     def __init__(self, game):
+        super().__init__(game)
+
         self.game = game
 
         # Default settings ### Keep as strings

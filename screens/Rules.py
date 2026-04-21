@@ -1,9 +1,11 @@
 import pygame
 from utils.constants import WHITE, LIGHT, DARK, BG
+from screens.screen import Screen
 
-class RulesScreen:
+
+class RulesScreen(Screen):
     def __init__(self, game):
-        self.game = game
+        super().__init__(game)
         #self.logo = pygame.image.load("set_cards.png").convert_alpha() --> other images?
         self.rules = [
             "Goal: Find a 'Set' of 3 cards from 12 cards displayed on the screen.",

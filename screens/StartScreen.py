@@ -1,12 +1,14 @@
 import pygame
 import sys
 from utils.constants import WHITE, LIGHT, DARK, BG
+from screens.screen import Screen
 
 pygame.init()
 
 
-class StartScreen:
+class StartScreen(Screen):
     def __init__(self, game):
+        super().__init__(game)
         self.game = game  # store the Game object inside this Startscreen
         # because it needs Game, the main controller to run
 
