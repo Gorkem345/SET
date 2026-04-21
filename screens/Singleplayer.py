@@ -223,13 +223,13 @@ class SingleplayerScreen:
         """Give the computer a random number of seconds to 'think'."""
         # Computer takes between 8 and 30 seconds depending on difficulty level
         if self.difficulty == "Easy":
-            delay = random.randint(18000, 30000)
+            delay = random.randint(20000, 32000)
             self.comp_target_time = pygame.time.get_ticks() + delay
         if self.difficulty == "Normal":
-            delay = random.randint(12000, 20000)
+            delay = random.randint(14000, 22000)
             self.comp_target_time = pygame.time.get_ticks() + delay
         if self.difficulty == "Hard":
-            delay = random.randint(8000, 12000)
+            delay = random.randint(10000, 14000)
             self.comp_target_time = pygame.time.get_ticks() + delay
 
     def update_computer(self):
@@ -277,7 +277,7 @@ class SingleplayerScreen:
             hint_indices = self.game.table.give_set()
 
             if hint_indices:
-                if self.set_sound:
+                if self.set_sound and not self.game.table.selection_mode:
                     self.set_sound.play()
                 # 1. Claim the turn! (2 represents the computer)
                 self.start_set_timer(2)
@@ -301,7 +301,7 @@ class SingleplayerScreen:
             if event.type == pygame.KEYDOWN:
                 # Player 1 hits SPACEBAR
                 if event.key == pygame.K_SPACE:
-                    if self.set_sound:
+                    if self.set_sound and not self.game.table.selection_mode:
                         self.set_sound.play()
                     if self.active_player is None:
                         self.start_set_timer(1)
