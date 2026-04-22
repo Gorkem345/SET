@@ -22,6 +22,7 @@ class Multiplayer(PlayScreen):
 
     def check_game_timeout(self):
         if self.get_game_time_left() <= 0:
+            self.game.table.game_end = True
             if self.p1_score > self.p2_score:
                 self.game.winner = "Player 1!"
             elif self.p2_score > self.p1_score:
@@ -57,6 +58,7 @@ class Multiplayer(PlayScreen):
         # as an attribute of Game object so that it can access to WinnerScreen
 
         if not self.game.table.find_sets():
+            self.game.table.game_end = True
             if self.p1_score > self.p2_score:
                 self.game.winner = "Player 1!"
 

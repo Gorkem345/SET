@@ -50,6 +50,7 @@ class SingleplayerScreen(PlayScreen):
 
     def check_game_timeout(self):
         if self.get_game_time_left() <= 0:
+            self.game.table.game_end = True
             if self.p1_score > self.comp_score:
                 self.game.winner = "Player 1!"
             elif self.comp_score > self.p1_score:
@@ -66,6 +67,7 @@ class SingleplayerScreen(PlayScreen):
 
     def check_winner(self):
         if not self.game.table.find_sets():
+            self.game.table.game_end = True
             if self.p1_score > self.comp_score:
                 self.game.winner = "Player 1!"
             elif self.p1_score < self.comp_score:

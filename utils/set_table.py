@@ -1,9 +1,7 @@
-from utils.card_deck import Card #the 81-card dictionary
+from utils.card_deck import cards #the 81-card dictionary
 import random
 import copy
 import pygame
-from utils.card_deck import cards
-
 
 class Table:
     def __init__(self):
@@ -60,7 +58,7 @@ class Table:
         return set_formed
 
     def replace_selection(self):
-        if self.correct_set:
+        if not self.game_end and self.correct_set:
             if self.num_cards_in_deck > 0:
                 self.pull3cards()
             else:
@@ -82,10 +80,11 @@ class Table:
             self.game_end = True # For debug
         else:
             for iter_num in range(3):
-                key, value = random.choice(list(self.deck.items()))
-                self.cards_on_table[self.selected[iter_num]] = value
-                del self.deck[key]
-                self.num_cards_in_deck -= 1
+                if not self.game_end:
+                    key, value = random.choice(list(self.deck.items()))
+                    self.cards_on_table[self.selected[iter_num]] = value
+                    del self.deck[key]
+                    self.num_cards_in_deck -= 1
         if self.find_sets() == []:
             ###### HANDLE NO MORE MATCHES ######
             print("No available matches, redistributing!")
@@ -93,7 +92,7 @@ class Table:
     def pull12cards(self):
         if self.num_cards_in_deck < 12:
             ###### HANDLE END OF GAME #######
-            self.game_end = True # For debug
+            self.game_end = True
         else:
             for iter_num in range(12):
                 key, value = random.choice(list(self.deck.items()))
@@ -105,7 +104,7 @@ class Table:
                 self.num_cards_in_deck -= 1
             if len(self.find_sets()) == 0:
                 ###### HANDLE NO MORE MATCHES ######
-                print("No available matches, redistributing!")
+                #print("No available matches, redistributing!")
                 self.pull12cards()
 
     # This function returns the indices that form a set from the table.
@@ -155,17 +154,16 @@ class Table:
             set = False
         return set
 
-    def update(self):
-        if self.waiting_for_replace:
-            if pygame.time.get_ticks() >= self.replace_time:
-                self.replace_selection()
-                self.waiting_for_replace = False
-
     def __repr__(self):
         message = str("")
         for index in range(len(self.cards_on_table)):
             message += "Card " + str(index) + ": " +self.cards_on_table[index].__repr__()
         return message
+
+    def update(self):
+        if not self.game_end and self.waiting_for_replace and pygame.time.get_ticks() >= self.replace_time:
+            self.waiting_for_replace = False
+            self.replace_selection()
 
 # Looks at the first 2 cards and finds the required card to form a set. Compares the third card to the required card,
 # if they are the same, returns True; otherwise, returns False.
