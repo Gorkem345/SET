@@ -1,7 +1,9 @@
-from utils.image_dictionary import cards #the 81-card dictionary
+from utils.card_deck import Card #the 81-card dictionary
 import random
 import copy
 import pygame
+from utils.card_deck import cards
+
 
 class Table:
     def __init__(self):
@@ -152,6 +154,12 @@ class Table:
         else:
             set = False
         return set
+
+    def update(self):
+        if self.waiting_for_replace:
+            if pygame.time.get_ticks() >= self.replace_time:
+                self.replace_selection()
+                self.waiting_for_replace = False
 
     def __repr__(self):
         message = str("")
