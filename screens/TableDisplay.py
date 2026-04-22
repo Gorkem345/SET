@@ -1,6 +1,6 @@
 import pygame
 from utils.set_table import Table
-import utils.image_dictionary as dict
+import utils.card_deck as dict
 
 
 class Display_card:

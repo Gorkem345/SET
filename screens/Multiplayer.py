@@ -2,149 +2,23 @@ import pygame
 from utils.constants import WHITE, DARK, LIGHT
 from screens.TableDisplay import Display_board
 from utils.set_table import Table
-from screens.screen import Screen
+from screens.PlayScreen import PlayScreen
 
 
-class GameScreen(Screen):
+class Multiplayer(PlayScreen):
     def __init__(self, game):  # self.game_screen = GameScreen(self)
-        super().__init__(game)  # game here is the Game object, so self.game = Game()
-        self.board = Display_board(game)
-
-        # UI buttons
-        self.setbutton = pygame.Rect(200, 80, 198, 80)
-        self.hint_button = pygame.Rect(0, 0, 100, 40)
-        self.restart_button = pygame.Rect(0, 0, 100, 50)
-        self.menu_button = pygame.Rect(0, 0, 100, 50)
+        super().__init__(game)
 
         # Score
         self.p1_score = 0
         self.p2_score = 0
-
-        # Active answering player
-        self.active_player = None
-
-        # 15-second SET timer
-        self.set_time_limit = 15000
-        self.set_start_time = 0
-
-        # Whole game timer: 5 minutes (Default)
-        self.game_duration = self.game.turn_duration_ms + 1000
-        self.game_start_time = pygame.time.get_ticks()
-        #remember when the GameScreen is created not the time when you hit multiplayer play
-
-        #winner
-        self.winner = None
-
-        #Game pause timer
-        self.paused = False
-        self.pause_start_time = 0
-
-        #messager panel
-        self.status_message = "Press set when ready"
-        self.message_end_time = 0
-
-        # Background
-        img = pygame.image.load("images/table.png").convert()
-        img_w, img_h = img.get_size()
-        screen_w, screen_h = 1080, 720
-        x = (img_w - screen_w) // 2
-        y = (img_h - screen_h) // 2
-        self.background = img.subsurface((x, y, screen_w, screen_h))
-
-        try:
-            self.correct_sound = pygame.mixer.Sound("sounds/correct.wav")
-            self.wrong_sound = pygame.mixer.Sound("sounds/wrong.wav")
-            self.select_sound = pygame.mixer.Sound("sounds/select.wav")
-            self.set_sound = pygame.mixer.Sound("sounds/set.wav")
-
-            # Optional: adjust volume (0.0 to 1.0)
-            self.correct_sound.set_volume(0.3)
-            self.wrong_sound.set_volume(0.5)
-            self.select_sound.set_volume(0.4)
-            self.set_sound.set_volume(0.5)
-        except Exception as e:
-            print(f"Could not load sounds: {e}")
-            self.correct_sound = None
-            self.wrong_sound = None
-            self.select_sound = None
-            self.set_sound = None
-
-    def start_set_timer(self, player):
-        """Start the 15-second answer period for one player."""
-        self.active_player = player
-        self.set_start_time = pygame.time.get_ticks()  # it is the time pass when the game start until you click SET button
-
-
-    def clear_set_timer(self):
-        """Stop the answer period."""
-        self.active_player = None
-        self.set_start_time = 0
-
-    def get_time_left(self):
-        """Return remaining time in seconds. If no timer, return 15''."""
-
-        if self.active_player is None:
-            return 15
-
-        current_time = pygame.time.get_ticks()
-        elapsed = current_time - self.set_start_time
-        remaining = self.set_time_limit - elapsed
-
-        if remaining <= 0:
-            if self.wrong_sound:
-                self.wrong_sound.play()
-            # Clear the highlighted cards when time is up!
-            self.game.table.selection_mode = False
-            self.game.table.selected = []
-            self.game.table.hinted = []
-
-            if self.active_player == 1:
-                self.p1_score -= self.game.point_loss
-            elif self.active_player == 2:
-                self.p2_score -= self.game.point_loss
-
-            self.show_message("Time's up!", 1500)
-            self.clear_set_timer()
-            return 0
-
-        return remaining // 1000 + 1
-
-    def get_game_time_left(self):
-        #current_time = pygame.time.get_ticks() #the time now (since the program start)
-        #elapsed = current_time - self.game_start_time #time is the moment when  GameScreen created
-        #remaining = self.game_duration - elapsed #since the program keep running, the elapse keep moving forward
-                                                 #at first it is the time gap between NOW - Gamescreen create
-                                                 #then it is time now + 1 - gamescreen created
-                                                 # so on.
-
-        if self.paused:
-            current_time = self.pause_start_time
-        else:
-            current_time = pygame.time.get_ticks()
-
-        elapsed = current_time - self.game_start_time
-        remaining = self.game_duration - elapsed
-
-        if remaining <= 0:
-            return 0
-
-        return remaining // 1000
+        self.comp_score = 0
 
     def reset_game_screen(self):
+        super().reset_game_screen()
         self.p1_score = 0
         self.p2_score = 0
-        self.winner = None
-        self.clear_set_timer()
 
-        self.game_duration = self.game.turn_duration_ms + 1000
-
-        self.game_start_time = pygame.time.get_ticks()
-
-        # Reset table state too
-        self.game.table.selection_mode = False
-        self.game.table.selected = []
-        self.game.table.hinted = []
-        self.game.table.handle_start_game()
 
     def check_game_timeout(self):
         if self.get_game_time_left() <= 0:
@@ -174,16 +48,6 @@ class GameScreen(Screen):
             self.game_start_time += pause_duration
             self.paused = False
 
-    def pause_game_timer(self):
-        if not self.paused:
-            self.paused = True
-            self.pause_start_time = pygame.time.get_ticks()
-
-    def resume_game_timer(self):
-        if self.paused:
-            paused_duration = pygame.time.get_ticks() - self.pause_start_time
-            self.game_start_time += paused_duration
-            self.paused = False
 
     def check_winner(self):
         # GameScreen knows Game
@@ -214,10 +78,7 @@ class GameScreen(Screen):
             self.p2_score = 0
             self.game.table.handle_start_game()
 
-    #show different message based on user action result
-    def show_message(self, text, duration=1500):
-        self.status_message = text
-        self.message_end_time = pygame.time.get_ticks() + duration
+
 
     def handle_event(self, event):
         if not self.game.table.waiting_for_replace:
