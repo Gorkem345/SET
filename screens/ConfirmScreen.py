@@ -27,29 +27,25 @@ class ConfirmScreen(Screen):
 
         return remaining // 1000 + 1
 
-    def execute_action(self):
-        self.game.game_screen.resume_game_timer()
-
-        if self.pending_action == "menu":
-            self.game.game_screen.reset_game_screen()
-            self.game.current_screen = self.game.start_screen
-        elif self.pending_action == "menu_single":
-            self.game.singleplayer_screen.reset_game_screen()
-            self.game.current_screen = self.game.start_screen
-        elif self.pending_action == "restart_single":
-            self.game.singleplayer_screen.reset_game_screen()
-            self.game.current_screen = self.game.singleplayer_screen
-        elif self.pending_action == "restart":
-            self.game.game_screen.reset_game_screen()
-            self.game.current_screen = self.game.game_screen
-
     def handle_event(self, event):
         mouse = pygame.mouse.get_pos()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.yes_button.collidepoint(mouse):
-                self.game.game_screen.resume()
-                self.execute_action()
+                self.game.game_screen.resume_game_timer()
+
+                if self.pending_action == "menu":
+                    self.game.game_screen.reset_game_screen()
+                    self.game.current_screen = self.game.start_screen
+                elif self.pending_action == "menu_single":
+                    self.game.singleplayer_screen.reset_game_screen()
+                    self.game.current_screen = self.game.start_screen
+                elif self.pending_action == "restart_single":
+                    self.game.singleplayer_screen.reset_game_screen()
+                    self.game.current_screen = self.game.singleplayer_screen
+                elif self.pending_action == "restart":
+                    self.game.game_screen.reset_game_screen()
+                    self.game.current_screen = self.game.game_screen
 
     def draw(self, screen):
         mouse = pygame.mouse.get_pos()
@@ -76,8 +72,12 @@ class ConfirmScreen(Screen):
 
         # countdown finished -> continue game automatically
         if seconds_left == 0:
-            self.game.game_screen.resume_game_timer()
-            self.game.current_screen = self.game.game_screen
+            if self.pending_action in ('menu_single', 'restart_single'):
+                self.game.singleplayer_screen.resume_game_timer()
+                self.game.current_screen = self.game.singleplayer_screen
+            else:
+                self.game.game_screen.resume_game_timer()
+                self.game.current_screen = self.game.game_screen
             return
 
         title_text = self.game.sub_font.render(msg, True, WHITE)

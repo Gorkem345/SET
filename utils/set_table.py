@@ -1,31 +1,33 @@
-from utils.image_dictionary import cards
+from utils.image_dictionary import cards #the 81-card dictionary
 import random
 import copy
 import pygame
 
-
 class Table:
     def __init__(self):
-        self.deck = {}
+        self.deck = {} #The remaining undealt cards
         self.num_cards_in_deck = 81
         self.cards_on_table = [None for _ in range(12)]
+        #Creates 12 slots on the table
+        #[None, None, None, ..., None] at first
         self.hint = []
         self.selected = []
         self.selection_mode = False
         self.waiting_for_replace = False
         self.replace_time = 0
-        self.correct_set = False
+        self.correct_set = False #check if the selected cards are a real set
         self.game_end = False
 
     def handle_start_game(self):
-        self.deck = copy.deepcopy(cards)
+        self.deck = copy.deepcopy(cards) #a copy of 81 card dictionary
+                                         #so everytime remove card will not destory the original one
         self.num_cards_in_deck = 81
         self.selected = []
         self.selection_mode = False
         self.game_end = False
         self.pull12cards()
 
-    def handle_click(self, index):
+    def handle_click(self, index): #left click add a card to the selection
         if self.selection_mode:
             if self.cards_on_table[index] != None and index not in self.selected:
                 self.selected.append(index)
@@ -33,7 +35,7 @@ class Table:
                     return self.handle_selection()
         return None #No complete selection made yet
 
-    def handle_right_click(self, index):
+    def handle_right_click(self, index): #right click: remove a card from the selection
         if self.selection_mode:
             if self.cards_on_table[index] != None and index in self.selected:
                 self.selected.remove(index)
@@ -85,7 +87,7 @@ class Table:
         if self.find_sets() == []:
             ###### HANDLE NO MORE MATCHES ######
             print("No available matches, redistributing!")
-            self.pull12cards()
+            self.pull12cards() #after replacing the 3 cards, check whether the table has any valid SETs
     def pull12cards(self):
         if self.num_cards_in_deck < 12:
             ###### HANDLE END OF GAME #######
@@ -93,8 +95,11 @@ class Table:
         else:
             for iter_num in range(12):
                 key, value = random.choice(list(self.deck.items()))
-                self.cards_on_table[iter_num] = value
-                del self.deck[key]
+                #after calling self.handle_start_game(), self.deck is the 81 cards deck
+                #in this loop of 12 loops in total, randomly pick one
+                #each loop have key = card id, value = one Card object
+                self.cards_on_table[iter_num] = value #place this Card object to one position of the empty 12 slots
+                del self.deck[key] #each card will be used only once
                 self.num_cards_in_deck -= 1
             if len(self.find_sets()) == 0:
                 ###### HANDLE NO MORE MATCHES ######
@@ -106,14 +111,16 @@ class Table:
         set_indices = []
 
         index_c1 = 0
-        for card1 in self.cards_on_table:
+        for card1 in self.cards_on_table: #loop through all cards on the table
+                                          #pick first card
             if card1 != None:
                 index_c2 = 0
-                for card2 in self.cards_on_table:
+                for card2 in self.cards_on_table: #for each card1, loop through all cards (cards2)
                     if card2 != None:
-                        if index_c1 < index_c2:  # To not get duplicate sets.
+                        if index_c1 < index_c2:  # only use cards 2 if it comes after card, so only use card2 = B, C, D when card1 = A
+                                                 # To not get duplicate sets, like (A, B), (B, A)
                             index_c3 = 0
-                            for card3 in self.cards_on_table:
+                            for card3 in self.cards_on_table: #for each card2, loop through all card3
                                 if card3 != None:
                                     if index_c2 < index_c3:  # To not get duplicate sets.
                                         if is_set(card1, card2, card3):  # Returns True if they form a set.
@@ -160,7 +167,7 @@ def is_set(card1, card2, card3):
         required_filling = card1.filling
     else:
         for filling in ["e", "s", "f"]:
-            if filling != card1.filling and filling != card2.filling:
+            if filling != card1.filling and filling != card2.filling: #Find the filling that is NOT card1 and NOT card2
                 required_filling = filling
 
     # Find color
@@ -192,6 +199,11 @@ def is_set(card1, card2, card3):
         return True
     else:
         return False
+
+
+
+
+
 '''
 #Debug
 myTable = Table()
