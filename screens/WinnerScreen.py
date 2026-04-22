@@ -22,6 +22,7 @@ class WinnerScreen(Screen):
                 self.game.current_screen = self.game.start_screen
 
     def draw(self, screen):
+        self.game.table.game_end = True
         mouse = pygame.mouse.get_pos()
         screen.fill(BG)
 

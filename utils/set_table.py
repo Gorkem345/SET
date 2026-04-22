@@ -58,7 +58,7 @@ class Table:
         return set_formed
 
     def replace_selection(self):
-        if self.correct_set:
+        if not self.game_end and self.correct_set:
             if self.num_cards_in_deck > 0:
                 self.pull3cards()
             else:
@@ -80,10 +80,11 @@ class Table:
             self.game_end = True # For debug
         else:
             for iter_num in range(3):
-                key, value = random.choice(list(self.deck.items()))
-                self.cards_on_table[self.selected[iter_num]] = value
-                del self.deck[key]
-                self.num_cards_in_deck -= 1
+                if not self.game_end:
+                    key, value = random.choice(list(self.deck.items()))
+                    self.cards_on_table[self.selected[iter_num]] = value
+                    del self.deck[key]
+                    self.num_cards_in_deck -= 1
         if self.find_sets() == []:
             ###### HANDLE NO MORE MATCHES ######
             print("No available matches, redistributing!")
@@ -160,7 +161,7 @@ class Table:
         return message
 
     def update(self):
-        if self.waiting_for_replace and pygame.time.get_ticks() >= self.replace_time:
+        if not self.game_end and self.waiting_for_replace and pygame.time.get_ticks() >= self.replace_time:
             self.waiting_for_replace = False
             self.replace_selection()
 
