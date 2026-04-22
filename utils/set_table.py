@@ -1,4 +1,4 @@
-from utils.image_dictionary import cards #the 81-card dictionary
+from utils.card_deck import cards #the 81-card dictionary
 import random
 import copy
 import pygame
@@ -91,7 +91,7 @@ class Table:
     def pull12cards(self):
         if self.num_cards_in_deck < 12:
             ###### HANDLE END OF GAME #######
-            self.game_end = True # For debug
+            self.game_end = True
         else:
             for iter_num in range(12):
                 key, value = random.choice(list(self.deck.items()))
@@ -103,7 +103,7 @@ class Table:
                 self.num_cards_in_deck -= 1
             if len(self.find_sets()) == 0:
                 ###### HANDLE NO MORE MATCHES ######
-                print("No available matches, redistributing!")
+                #print("No available matches, redistributing!")
                 self.pull12cards()
 
     # This function returns the indices that form a set from the table.
@@ -158,6 +158,11 @@ class Table:
         for index in range(len(self.cards_on_table)):
             message += "Card " + str(index) + ": " +self.cards_on_table[index].__repr__()
         return message
+
+    def update(self):
+        if self.waiting_for_replace and pygame.time.get_ticks() >= self.replace_time:
+            self.waiting_for_replace = False
+            self.replace_selection()
 
 # Looks at the first 2 cards and finds the required card to form a set. Compares the third card to the required card,
 # if they are the same, returns True; otherwise, returns False.
