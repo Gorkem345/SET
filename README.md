@@ -52,7 +52,7 @@ Constants contains the colors that are used for displaying in multiple files.
 
 - Local multiplayer only (no online mode)   
 - Window size is fixed and not resizable (does not fit correctly on every laptop)
-- No save/load system (e.g. no highscore)
+- No save/load system (e.g. no highscore, no saved settings)
 - The difficulty has standard values, it is not adapted automatically to the player's behavior
 - The game cannot be played by more than 2 players
 - The cards images are imported from an image with a specific layout, changing this requires updating coordinates
