@@ -4,7 +4,30 @@ from screens.screen import Screen
 
 
 class WinnerScreen(Screen):
+    """
+    README - WinnerScreen
+
+    Description:
+    This class displays the final result of the game after it ends.
+    It shows the winner, player scores, and provides a button to return to the main menu.
+
+    Parameters:
+    game:
+        The main Game object used to access scores, winner information,
+        and control screen transitions.
+
+    Structure:
+        - Inherits from Screen
+        - Displays a result panel with game outcome
+        - Shows different results for multiplayer and singleplayer
+        - Contains a "Back to Menu" button
+
+    Output:
+        Displays the final game result and allows the player to return to the menu.
+    """
+
     def __init__(self, game):
+        """Initialize result panel and navigation button."""
         super().__init__(game)
         self.prev_screen = None
 
@@ -15,6 +38,7 @@ class WinnerScreen(Screen):
         self.homepage_button = pygame.Rect(420, 480, 240, 60)
 
     def handle_event(self, event):
+        """Handle click event to return to the start screen."""
         mouse = pygame.mouse.get_pos()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -22,6 +46,14 @@ class WinnerScreen(Screen):
                 self.game.current_screen = self.game.start_screen
 
     def draw(self, screen):
+        """
+        Description:
+        Renders the game over screen with winner and score information.
+
+        Function:
+        Displays the result panel, shows the winner and scores depending on
+        game mode, and draws a button that allows the player to return to the menu.
+        """
         self.game.table.game_end = True
         mouse = pygame.mouse.get_pos()
         screen.fill(BG)
