@@ -5,6 +5,8 @@
 ### **Course: Advanced Programming in Python (WUR)** 
 
 ## ***Instructions:***
+### Recommended Python Version:
+- 3.12
 ### Install libraries: 
 - pygame
 - sys
