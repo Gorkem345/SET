@@ -5,68 +5,46 @@
 ### **Course: Advanced Programming in Python (WUR)** 
 
 ## ***Instructions:***
-### Recommended Python Version:
-- 3.12
-### Install libraries: 
-- pygame
-- sys
-- random
-- copy
+### *Recommended Python Version:*
+#### *3.12*
+### *Install Library: pygame*
+#### *Other modules that are used: sys, random, copy*
 ### *Run Game.py to open the game*
+
 ---
 
 ## **1. DESCRIPTION**
 This project is an implementation of the card game **SET**, built using **Pygame** and **object‑oriented programming**.  
-Players need to identify valid SETs among cards displayed on the table. The game includes:
+In this game, players need to identify valid SETs among cards displayed on the table. If they form a set depends on their color, number, shape and shading. 
+The game includes:
 
-- Multiple **GUI** screens (Start, Rules, Pre-Start, Game, Winner, Confirm)  
+- Singleplayer (with computer opponent) and Multiplayer mode for 2 players on one laptop
+- Multiple interactive **GUI** screens (Start, Rules, Settings, Pre-Start, Game, Winner, Confirm) with visuals and sound effects 
 - Mouse and keyboard **event handling**  
-- **Timers** (SET timer and game timer)  
-- Sound effects and visual feedback
+- **Timers** (SET timer and game timer)
 
-### **1.1 Game**
-### **1.2 Set table**
-### **1.3 Cards deck**
-### **1.4 Table Display**
-### **1.5 Screen**
-#### **1.5.1 Start**
-#### **1.5.2 Rules**
-#### **1.5.3 Pre-start**
-#### **1.5.4 Play**
-##### **1.5.4.1 Multiplayer**
-##### **1.5.4.2 Singleplayer**
-#### **1.5.5 Confirm**
-#### **1.5.6 Winner**
-#### **1.5.7 Settings**
-### **1.6 Constants**
+The game class is the main controller which stores information and is linked to every screen. Each screen class inherits from the Screen base class.
+The game logic is handled by the Table class within set_table.py and the Card class in card_deck.py represents the cards.
+Constants contains the colors that are used for displaying in multiple files.
 
 ---
 
 ## **2. PARAMETERS**
+###  Gameplay parameters
+- **Game Duration:** 1-20 minutes, adjustable in Settings (game.turn_duration_ms)
+- **Point Gain/Loss:** 0-10 points, adjustable in Settings (game.point_gain/game.point_loss)
+- - **Player input:**  
+  - Player 1 → SPACE to call "Set"  
+  - Player 2 → ENTER to call "Set" 
+- **SET Answer Timer:** 15 seconds after calling "Set" 
+- **Difficulty:** Easy, Normal, or Hard - Determines how fast the computer calls for "Set"
 
-- **SET Timer:** 15 seconds per turn  
-- **Game Duration:** 5 minutes  
+### Internal parameters
 - **Card Replacement Delay:** 1.5 seconds after selecting 3 cards  
-- **Screen Resolution:** 1080 × 720  
-- **Player input:**  
-  - Player 1 → SPACE to call SET  
-  - Player 2 → ENTER to call SET  
+- **Screen Resolution:** 1080 × 720
 - **Deck:** 81 unique cards (4 attributes × 3 values each)
-
-### **1.1 Game**
-### **1.2 Set table**
-### **1.3 Cards deck**
-### **1.4 Table Display**
-### **1.5 Screen**
-#### **1.5.1 Start**
-#### **1.5.2 Rules**
-#### **1.5.3 Pre-start**
-#### **1.5.4 Play**
-##### **1.5.4.1 Multiplayer**
-##### **1.5.4.2 Singleplayer**
-#### **1.5.5 Confirm**
-#### **1.5.6 Winner**
-#### **1.5.7 Settings**
+- **Card Grid:** 12 random cards from deck
+- **Hint:** 2 random cards from one random set on the table
 
 ---
 
@@ -77,96 +55,68 @@ Players need to identify valid SETs among cards displayed on the table. The game
 - No save/load system (e.g. no highscore)
 - The difficulty has standard values, it is not adapted automatically to the player's behavior
 - The game cannot be played by more than 2 players
+- The cards images are imported from an image with a specific layout, changing this requires updating coordinates
+
 ---
 
 ## **4. STRUCTURES**
+### **Loops and Conditionals**
+A while loop is used to keep the game running until QUIT is called. 
+For loops are used, for example in find_sets() to loop through cards
+Conditionals are used, for example to check valid sets and to determine the winner
 
-### **Main Classes**
+### **Classes**
+#### **Inheritance**
+- Screen is a base class and all screens (StartScreen, PlayScreen, RulesScreen, etc.) inherit from it
+- PlayScreen is the parent class for Multiplayer and SingleplayerScreen
+#### **Composition**
+- Game owns Table and all screens
 
 #### **Game**
-- Runs the main loop and manages screen switching.  
-- Holds global state (scores, winner, table).  
-- Delegates event handling and drawing to the active screen.
-
-#### **GameScreen**
-- Core gameplay interface.  
-- Handles timers, scoring, UI buttons, and card interaction.  
-- Communicates with the Table class for SET logic.
+- Runs the **main loop** and manages screen switching  
+- Holds global state (scores, winner, table)  
+- Delegates **event handling** and drawing to the active screen
 
 #### **Table**
-- Manages the deck, cards on the table, and selected cards.  
-- Validates SETs and handles card replacement.  
-- Implements the 1.5‑second delay before clearing/replacing cards.
+- Manages the deck, cards on the table, and selected cards 
+- Validates SETs and handles card replacement
 
-#### **Display_board / Display_card**
-- Draws the table layout and individual cards.  
-- Converts card data into visual elements.
+#### **Display_board/Display_card (TableDisplay.py)**
+- Draws the table layout and individual cards  
+- Converts card data into visuals of the cards
 
 #### **StartScreen, RulesScreen, WinnerScreen, ConfirmScreen, PreStartScreen**
-- Individual GUI screens with their own event handling and drawing logic.
+- Individual GUI screens with their own event handling and drawing logic
 
 ---
 
-## **5. OUTPUTS (Including Interfaces)**
+## **5. OUTPUTS**
 
-### **Visual Output**
+### **Graphical output**
+- GUI rendered with pygame
+- Screens: Start, Pre‑Start, Singleplayer/Multiplayer, Rules, Settings, Confirm, Winner
+
+### **User Interface elements**
 - Game window with background table image  
-- Card grid (12–15 cards)  
-- Left‑side panel showing:  
-  - Player scores  
-  - Game timer  
-  - SET timer  
-  - Buttons (Hint, Restart, Menu)  
-- Message panel displaying:  
-  - “SET!”  
-  - “Not a set!”  
-  - “Time’s up!”  
-  - “Press set when ready”
+- Card grid (12 cards)  
+  - Selected highlights (yellow)
+- Buttons (Hint, Restart, Menu)  
+- Message panel displaying: "SET!", "Not a set!", or "Time’s up!"  
 
 ### **Audio Output**
-- `correct.wav` for valid SET  
-- `wrong.wav` for incorrect SET  
+- "correct.wav" for valid SET  
+- "wrong.wav" for incorrect SET  
+- "select.wav" for click on card
+- "set.wav" for pressing SPACE/ENTER to call for "Set"
 
 ### **Gameplay Output**
-- Updated scores  
-- Highlighted hints  
-- Winner screen at end of game  
-- Delayed card replacement animation  
-
----
-
-## **6. CLASS & METHOD SUMMARIES (Mini‑README)**
-
-### **Table.handle_click(index)**
-- Adds a card to the current selection.  
-- When 3 cards are selected, triggers `handle_selection()`.
-
-### **Table.handle_selection()**
-- Checks if the selected cards form a SET.  
-- Starts a 1.5‑second delay before clearing or replacing cards.
-
-### **Table.finish_set_replacement()**
-- After the delay, replaces cards (if correct) or clears selection (if wrong).
-
-### **GameScreen.handle_event(event)**
-- Processes keyboard and mouse input.  
-- Routes card clicks to the Table.  
-- Updates scores, timers, and messages.
-
-### **Game.run()**
-- Main loop:  
-  1. Handle events  
-  2. Check delayed card replacement  
-  3. Draw the active screen  
-
----
-
-## **7. HOW TO RUN**
-1. Install Python and Pygame  
-2. Run:  
-   ```bash
-   python main.py
-   ```
-3. Use SPACE (Player 1) or ENTER (Player 2) to call SET.
+- Left‑side panel (in Multiplayer and Singleplayer Screens) showing:  
+  - Player scores  
+  - Game duration timer  
+  - SET timer  
+- Highlighted hints (cyan) 
+- Winner determination  
+- Delayed card replacement
+- Computer actions (calling and selecting set)
 
 ---
