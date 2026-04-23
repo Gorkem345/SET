@@ -4,9 +4,38 @@ from screens.screen import Screen
 
 
 class ConfirmScreen(Screen):
-    def __init__(self, game):
-        super().__init__(game)
+    """
+        README - ConfirmScreen
 
+        Description:
+        This class represents a confirmation overlay screen that appears when the player
+        attempts to perform important actions such as returning to the menu or restarting the game.
+        It pauses the current game, shows a countdown, and asks the player to confirm the action.
+
+        Parameters:
+        game:
+            The main Game object.
+            It provides access to:
+            - current screen switching
+            - game_screen and singleplayer_screen
+            - fonts
+            - timer control functions
+
+        Structure:
+            - Inherits from Screen
+            - Displays a dark overlay and centered confirmation panel
+            - Contains a "YES" button for confirming actions
+            - Uses a countdown timer (3 seconds)
+            - Stores pending action type (menu / restart / singleplayer variants)
+
+        Output:
+            This class does not return values directly.
+            It controls screen transitions and game state changes based on user input
+            or countdown expiration.
+        """
+    def __init__(self, game):
+        """Initialize confirmation screen state and timer."""
+        super().__init__(game)
         self.yes_button = pygame.Rect(0, 0, 140, 60)
 
         self.pending_action = None   # "menu" or "restart"
@@ -14,10 +43,12 @@ class ConfirmScreen(Screen):
         self.duration = 3000   # 3 seconds
 
     def open(self, action):
+        """Open the confirmation screen and start countdown."""
         self.pending_action = action
         self.start_time = pygame.time.get_ticks()
 
     def get_seconds_left(self):
+        """Return remaining countdown time in seconds."""
         now = pygame.time.get_ticks()
         elapsed = now - self.start_time
         remaining = self.duration - elapsed
@@ -28,6 +59,7 @@ class ConfirmScreen(Screen):
         return remaining // 1000 + 1
 
     def handle_event(self, event):
+        """Handle mouse click to confirm and execute the pending action."""
         mouse = pygame.mouse.get_pos()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -48,6 +80,15 @@ class ConfirmScreen(Screen):
                     self.game.current_screen = self.game.game_screen
 
     def draw(self, screen):
+        """
+        Description:
+        Renders the confirmation overlay and manages the countdown behavior.
+
+        Function:
+        Draws the dark background, confirmation panel, message, countdown timer,
+        and YES button. If the countdown reaches zero, it automatically resumes
+        the game without executing the pending action.
+        """
         mouse = pygame.mouse.get_pos()
 
         # dark overlay
