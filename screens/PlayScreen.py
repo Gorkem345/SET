@@ -1,54 +1,35 @@
 import pygame
 from utils.constants import WHITE, DARK, LIGHT
 from screens.TableDisplay import Display_board
+from utils.set_table import Table
 from screens.screen import Screen
 
 class PlayScreen(Screen):
-    """
-    README - PlayScreen
-
+    '''
     Description:
-    This class defines the main shared gameplay logic for the SET game play screen.
-    It manages the board display, player action timer, whole game timer, pause/resume
-    behavior, status messages, background image, and sound effects.
-    It is designed as a base play screen that can support both multiplayer and
-    singleplayer game modes.
-
+    Base class for the playable game screens (Singleplayer and Multiplayer). Handles the shared UI components like the board display, buttons (hint, restart, menu), audio playback, and complex timing logic (including the 15-second SET timer, overall game timer, and pause states).
     Parameters:
-    game:
-        The main Game object.
-        It provides shared resources and state such as:
-        - fonts
-        - current screen
-        - table object
-        - turn duration
-        - score rules
-        - screen switching
-
-    Structure:
-        - Inherits from Screen
-        - Uses Display_board to draw the cards/table
-        - Uses pygame.Rect objects for buttons
-        - Tracks active answering player
-        - Tracks 15-second SET answering timer
-        - Tracks full game timer
-        - Supports game pause and resume
-        - Stores temporary status messages
-        - Loads background image and sound effects
-
-    Output:
-        The class itself does not directly return a final output value.
-        Instead, it updates and manages internal game state, including:
-        - timer values
-        - current active player
-        - winner state
-        - pause state
-        - displayed messages
-        - table selection state
-
-    """
+    game: The central Game object acting as the main controller.
+    Limitations:
+    Highly coupled to the specific attribute structures of the `Game` and `Table` classes. Audio failure silently disables sound effects instead of throwing a hard error to prevent crashes.
+    Structures:
+    Inherits from the `Screen` base class. Uses `pygame.Rect` for UI boundaries, `pygame.mixer.Sound` for audio, integers for millisecond timing, and boolean flags for tracking pause and player states.
+    Outputs:
+    An initialized PlayScreen instance serving as the foundation for specific game modes.
+    '''
     def __init__(self, game):
-        """Initialize the shared play screen state, timers, assets, and controls."""
+        '''
+        Description:
+        Initializes the UI rectangles, sets default values for timers, positions the background, and loads the audio assets.
+        Parameters:
+        game: The main Game object.
+        Limitations:
+        The background positioning math assumes a base application resolution of 1080x720.
+        Structures:
+        Calls `super().__init__(game)` to inherit base behaviors. Employs a try-except block to safely load `.wav` files into `pygame.mixer.Sound` objects and set their volumes.
+        Outputs:
+        None.
+        '''
         super().__init__(game)
         self.board = Display_board(game)
         self.setbutton = pygame.Rect(200, 80, 198, 80)
@@ -105,7 +86,18 @@ class PlayScreen(Screen):
             self.select_sound = None
 
     def reset_game_screen(self):
-        """Reset the play screen state and restart the table and timers."""
+        '''
+        Description:
+        Resets the timing, pause states, and table logic to prepare for a fresh game.
+        Parameters:
+        None.
+        Limitations:
+        Does not reset player scores directly within this method (relies on child classes to handle specific scoring logic).
+        Structures:
+        Re-fetches `pygame.time.get_ticks()` for the start time, clears boolean pause flags, and delegates the board reset to `self.game.table.handle_start_game()`.
+        Outputs:
+        None.
+        '''
         self.winner = None
         self.clear_set_timer()
 
@@ -122,29 +114,51 @@ class PlayScreen(Screen):
         self.game.table.hinted = []
         self.game.table.handle_start_game()
 
-
     def start_set_timer(self, player):
-        """Start the 15-second answering timer for the given player."""
+        '''
+        Description:
+        Initiates the 15-second countdown period for the specified player to make their SET selection.
+        Parameters:
+        player: Identifier (usually integer 1 or 2) representing the player who claimed the turn.
+        Limitations:
+        -
+        Structures:
+        Assigns the player parameter to `self.active_player` and records the current millisecond timestamp using `pygame.time.get_ticks()`.
+        Outputs:
+        None.
+        '''
         self.active_player = player
-        self.set_start_time = pygame.time.get_ticks()  # it is the time pass when the game start until you click SET button
-
+        self.set_start_time = pygame.time.get_ticks()
 
     def clear_set_timer(self):
-        """Stop the answer period."""
+        '''
+        Description:
+        Terminates the active answer period and resets the player turn state.
+        Parameters:
+        None.
+        Limitations:
+        -
+        Structures:
+        Nullifies `self.active_player` and resets `self.set_start_time` to 0.
+        Outputs:
+        None.
+        '''
         self.active_player = None
         self.set_start_time = 0
 
     def get_time_left(self):
-        """
+        '''
         Description:
-        Calculates and returns the remaining time (in seconds) for the active player's SET attempt.
-
-        Function:
-        If no player is currently answering, it returns the default time (15 seconds).
-        If the time runs out, it resets the selection, applies a score penalty,
-        shows a "Time's up!" message, and clears the timer.
-        """
-
+        Calculates the remaining time for the active player's 15-second SET timer. If the time expires, it penalizes the player, clears their card selections, and displays a timeout message.
+        Parameters:
+        None.
+        Limitations:
+        Contains hardcoded logic checking `self.game.current_screen` to differentiate between Multiplayer and Singleplayer scoring.
+        Structures:
+        Computes elapsed time. If remaining time falls to or below 0, modifies player/computer scores directly based on `self.game.point_loss`, plays a sound, and calls `clear_set_timer()`.
+        Outputs:
+        Returns the remaining time in seconds (int). Returns 15 if no player is active. Returns 0 if time has expired.
+        '''
         if self.active_player is None:
             return 15
 
@@ -174,9 +188,19 @@ class PlayScreen(Screen):
 
         return remaining // 1000 + 1
 
-    # to make sure single player have the same function as multiplayer
     def get_game_time_left(self):
-        """Return the remaining overall game time in seconds."""
+        '''
+        Description:
+        Calculates the remaining time for the overall game duration, properly accounting for periods when the game is paused.
+        Parameters:
+        None.
+        Limitations:
+        -
+        Structures:
+        Subtracts the elapsed active game time from `self.game_duration`. Freezes the calculation at `self.pause_start_time` if the game is currently paused.
+        Outputs:
+        Returns the remaining game time in seconds (int). Returns 0 if the time has completely expired.
+        '''
         if self.paused:
             current_time = self.pause_start_time
         else:
@@ -190,24 +214,54 @@ class PlayScreen(Screen):
 
         return remaining // 1000
 
-
     def pause_game_timer(self):
-        """Pause the overall game timer."""
+        '''
+        Description:
+        Pauses the overarching game timer by capturing the exact moment the pause was triggered.
+        Parameters:
+        None.
+        Limitations:
+        Only pauses the overall game timer; it does not explicitly halt the 15-second SET timer.
+        Structures:
+        Updates `self.paused` boolean to True and captures `pygame.time.get_ticks()` into `self.pause_start_time`.
+        Outputs:
+        None.
+        '''
         if not self.paused:
             self.paused = True
             self.pause_start_time = pygame.time.get_ticks()
 
-
     def resume_game_timer(self):
-        """Resume the overall game timer after a pause."""
+        '''
+        Description:
+        Resumes the overall game timer, adjusting the original start time to offset the duration spent in the paused state.
+        Parameters:
+        None.
+        Limitations:
+        -
+        Structures:
+        Calculates the difference between current ticks and `self.pause_start_time`, then shifts `self.game_start_time` forward by that exact amount. Reverts `self.paused` to False.
+        Outputs:
+        None.
+        '''
         if self.paused:
             paused_duration = pygame.time.get_ticks() - self.pause_start_time
             self.game_start_time += paused_duration
             self.paused = False
 
-
-    #show different message based on user action result
     def show_message(self, text, duration=1500):
-        """Display a temporary status message for a given duration."""
+        '''
+        Description:
+        Assigns a temporary status message to be displayed on the screen's message panel for a defined lifespan.
+        Parameters:
+        text (str): The string message to display.
+        duration (int, optional): The lifespan of the message in milliseconds. Defaults to 1500.
+        Limitations:
+        Calling this method immediately overwrites any currently displaying message.
+        Structures:
+        Updates the `self.status_message` string and establishes `self.message_end_time` by adding the duration to current ticks.
+        Outputs:
+        None.
+        '''
         self.status_message = text
         self.message_end_time = pygame.time.get_ticks() + duration
