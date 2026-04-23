@@ -4,7 +4,31 @@ from screens.screen import Screen
 
 
 class RulesScreen(Screen):
+    '''
+    Description:
+    Displays the instructional manual, gameplay mechanics, and winning conditions for the SET game. It renders an array of text lines, presents graphical examples of valid sets, and provides a navigational button to return to the main menu.
+    Parameters:
+    game: The central Game object acting as the main controller.
+    Limitations:
+    Text wrapping is not dynamic; the rules are hardcoded into a list of strings and line breaks are handled manually.
+    Structures:
+    Inherits from the `Screen` base class. Employs a string list for bulk text rendering, `pygame.Rect` for button collision, and `pygame.image.load` for external graphical assets.
+    Outputs:
+    An initialized RulesScreen instance ready to render the tutorial interface.
+    '''
     def __init__(self, game):
+        '''
+        Description:
+        Initializes the Rules screen by loading the text content into an array, defining the "Go back" button's spatial boundaries, instantiating the specific font for the rules, and loading the visual examples sprite.
+        Parameters:
+        game: The main Game object.
+        Limitations:
+        Assumes the system has the "Corbel" font installed. Will result in a fatal error if the image path "images/example_sets.png" is incorrect or missing.
+        Structures:
+        Calls `super().__init__(game)`. Stores text inside the `self.rules` list and creates a `pygame.Rect` positioned in the bottom right corner.
+        Outputs:
+        None.
+        '''
         super().__init__(game)
         #self.logo = pygame.image.load("set_cards.png").convert_alpha() --> other images?
         self.rules = [
@@ -34,6 +58,18 @@ class RulesScreen(Screen):
         self.examples = pygame.image.load("images/example_sets.png").convert_alpha()
 
     def handle_event(self, event):
+        '''
+        Description:
+        Processes user inputs on the Rules screen, explicitly listening for mouse clicks on the "Go back" button to route the user back to the main menu.
+        Parameters:
+        event (pygame.event.Event): The Pygame event object triggered by user actions.
+        Limitations:
+        -
+        Structures:
+        Evaluates `if event.type == pygame.MOUSEBUTTONDOWN`. Checks mouse collision against `self.goback_button` using `collidepoint()`. Modifies `self.game.current_screen` to trigger the transition.
+        Outputs:
+        None.
+        '''
         mouse = pygame.mouse.get_pos()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -41,6 +77,18 @@ class RulesScreen(Screen):
                 self.game.current_screen = self.game.start_screen
 
     def draw(self, screen):
+        '''
+        Description:
+        Renders the complete instructional interface. Paints the background, iteratively draws the list of rule strings line-by-line, layers the graphical example image, and draws the interactive "Go back" button with hover color feedback.
+        Parameters:
+        screen (pygame.Surface): The primary display surface window where graphics are blitted.
+        Limitations:
+        Text vertical placement relies on a hardcoded absolute Y-coordinate increment (`y += 35`), which could overlap or overflow if additional rules are appended without adjusting the starting coordinate.
+        Structures:
+        Uses a standard `for loop` to iterate over `self.rules` and sequentially `screen.blit()` each generated text surface. Utilizes inline ternary logic (`LIGHT if ... else DARK`) to dynamically change button colors on mouse hover.
+        Outputs:
+        Mutates the passed screen surface to reflect the tutorials and UI elements.
+        '''
         mouse = pygame.mouse.get_pos()
         screen.fill(BG)
         # Title
