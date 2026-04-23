@@ -3,7 +3,30 @@ from utils.constants import WHITE, DARK, LIGHT
 from screens.screen import Screen
 
 class PreStartScreen(Screen):
+    """
+    README - PreStartScreen
+
+    Description:
+    This class represents the pre-start screen where players can view controls
+    and (for singleplayer) choose the game difficulty before starting.
+
+    Parameters:
+    game:
+        The main Game object used for accessing screens, table state,
+        and difficulty settings.
+
+    Structure:
+        - Inherits from Screen
+        - Displays control instructions
+        - Allows difficulty selection (singleplayer only)
+        - Contains a Continue button to start the game
+
+    Output:
+        Sets up initial game state (difficulty, table reset) and transitions
+        to the selected game screen.
+    """
     def __init__(self, game):
+        """Initialize control display, difficulty selection, and buttons."""
         super().__init__(game)
 
         # The target screen we will go to after pressing Continue
@@ -25,6 +48,7 @@ class PreStartScreen(Screen):
         self.continue_button.center = (540, 620)  # 540 is middle of 1080 width
 
     def handle_event(self, event):
+        """Handle clicks for difficulty selection and starting the game."""
         mouse = pygame.mouse.get_pos()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -56,6 +80,15 @@ class PreStartScreen(Screen):
                 self.game.current_screen = self.next_screen
 
     def draw(self, screen):
+        """
+        Description:
+        Renders the control instructions, difficulty selection, and start interface.
+
+        Function:
+        Displays player controls at the top, shows difficulty selection for
+        singleplayer mode, highlights selected options, and draws the Continue
+        button to proceed to the game.
+        """
         # Dark slate background
         screen.fill((44, 44, 62))
         mouse = pygame.mouse.get_pos()
