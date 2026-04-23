@@ -165,7 +165,7 @@ Players need to identify valid SETs among cards displayed on the table. The game
 1. Install Python and Pygame  
 2. Run:  
    ```bash
-   python main.py
+   python Game.py
    ```
 3. Use SPACE (Player 1) or ENTER (Player 2) to call SET.
 
