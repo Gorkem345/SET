@@ -1,5 +1,4 @@
 import pygame
-from utils.set_table import Table
 import utils.card_deck as dict
 
 

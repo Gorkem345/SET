@@ -1,7 +1,5 @@
 import pygame
 from utils.constants import WHITE, DARK, LIGHT
-from screens.TableDisplay import Display_board
-from utils.set_table import Table
 import random
 from screens.PlayScreen import PlayScreen
 
