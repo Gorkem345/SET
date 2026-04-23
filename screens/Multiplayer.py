@@ -4,7 +4,32 @@ from screens.PlayScreen import PlayScreen
 
 
 class Multiplayer(PlayScreen):
-    def __init__(self, game):  # self.game_screen = GameScreen(self)
+    """
+    README - Multiplayer
+
+    Description:
+    This class manages the multiplayer game mode for the SET game.
+    It handles player scores, turn-based input, game ending conditions,
+    screen transitions, and multiplayer-specific gameplay logic.
+
+    Parameters:
+    game:
+        The main Game object used to access shared resources such as
+        the table, screens, timers, fonts, and score settings.
+
+    Structure:
+        - Inherits from PlayScreen
+        - Tracks Player 1 and Player 2 scores
+        - Handles multiplayer keyboard and mouse input
+        - Checks for winner and game timeout
+        - Draws the multiplayer game interface
+
+    Output:
+        Updates the game state during multiplayer mode, including scores,
+        timer behavior, winner result, and screen transitions.
+    """
+    def __init__(self, game):
+        """Initialize multiplayer scores and shared play screen state."""# self.game_screen = GameScreen(self)
         super().__init__(game)
 
         # Score
@@ -13,12 +38,13 @@ class Multiplayer(PlayScreen):
         self.comp_score = 0
 
     def reset_game_screen(self):
+        """Reset the multiplayer screen and clear player scores."""
         super().reset_game_screen()
         self.p1_score = 0
         self.p2_score = 0
 
-
     def check_game_timeout(self):
+        """Check whether the game timer ended and move to the winner screen."""
         if self.get_game_time_left() <= 0:
             self.game.table.game_end = True
             if self.p1_score > self.p2_score:
@@ -37,11 +63,13 @@ class Multiplayer(PlayScreen):
 
     #pause and resume function
     def pause(self):
+        """Pause the multiplayer game timer."""
         if not self.paused:
             self.paused = True
             self.pause_start_time = pygame.time.get_ticks()
 
     def resume(self):
+        """Resume the multiplayer game timer after a pause."""
         if self.paused:
             pause_duration = pygame.time.get_ticks() - self.pause_start_time
             self.game_start_time += pause_duration
@@ -49,6 +77,7 @@ class Multiplayer(PlayScreen):
 
 
     def check_winner(self):
+        """Check whether no more sets remain and decide the winner."""
         # GameScreen knows Game
         # WinnerScreen knows Game
         # WinnerScreen does not know Gamescreen
@@ -81,6 +110,16 @@ class Multiplayer(PlayScreen):
 
 
     def handle_event(self, event):
+        """
+        Description:
+        Handles all player input during multiplayer gameplay.
+
+        Function:
+        Processes keyboard input for Player 1 and Player 2 to call SET,
+        handles mouse input for hints, restart, menu, card selection,
+        and card unselection, and updates scores, messages, and timers
+        based on whether a valid set is found.
+        """
         if not self.game.table.waiting_for_replace:
             mouse = pygame.mouse.get_pos()  # get mouse position
 
@@ -179,6 +218,7 @@ class Multiplayer(PlayScreen):
                             self.game.table.handle_right_click(clicked_index)
 
     def draw(self, screen):
+        """Draw the multiplayer game interface, scores, buttons, and status messages."""
         mouse = pygame.mouse.get_pos()
 
         screen.blit(self.background, (0, 0))

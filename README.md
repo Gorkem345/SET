@@ -9,7 +9,7 @@
 #### *3.12*
 ### *Install Library: pygame*
 #### *Other modules that are used: sys, random, copy*
-### *Run Game.py to initiate the game*
+### *Run Game.py to open the game*
 
 ---
 

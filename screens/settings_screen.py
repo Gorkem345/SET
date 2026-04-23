@@ -4,31 +4,30 @@ from screens.screen import Screen
 
 
 class SettingsScreen(Screen):
-    '''
+    """
+    README - SettingsScreen
+
     Description:
-    Provides an interactive user interface for modifying global game parameters. Allows the user to input custom values for the overall game duration, points earned for a correct SET, and points lost for an incorrect SET.
+    This class provides a settings interface where the user can modify
+    game parameters such as duration, score gain, and score loss.
+
     Parameters:
-    game: The central Game object acting as the main controller.
-    Limitations:
-    Inputs are strictly constrained to numeric characters. Maximum limits (20 for time, 10 for points) are hardcoded and enforced dynamically during typing.
-    Structures:
-    Inherits from the `Screen` base class. Uses strings to temporarily store user input, `pygame.Rect` for defining clickable areas, and tracks the currently focused input box via the `active_field` variable.
-    Outputs:
-    An initialized SettingsScreen instance ready to capture and apply user configurations.
-    '''
+    game:
+        The main Game object used to store and update global settings.
+
+    Structure:
+        - Inherits from Screen
+        - Uses text input fields for settings
+        - Tracks active input field
+        - Includes a save button to apply changes
+        - Validates numeric input with limits
+
+    Output:
+        Updates the game configuration and returns to the start screen
+        after saving.
+    """
     def __init__(self, game):
-        '''
-        Description:
-        Initializes the default text values for the settings, clears the active input field, and defines the geometric rectangles for the input boxes and the save button.
-        Parameters:
-        game: The main Game object.
-        Limitations:
-        Default values ("5", "1", "1") and visual layout coordinates are hardcoded.
-        Structures:
-        Calls `super().__init__(game)`. Instantiates `pygame.Rect` objects positioned along a specific horizontal axis (`box_center_x`).
-        Outputs:
-        None.
-        '''
+        """Initialize input fields, default values, and UI layout."""
         super().__init__(game)
 
         # Default settings ### Keep as strings
@@ -56,18 +55,7 @@ class SettingsScreen(Screen):
         self.save_button.center = (540, 630)
 
     def save_and_exit(self):
-        '''
-        Description:
-        Validates the current text inputs, converts them to the appropriate integer formats (including minute-to-millisecond conversion for duration), applies them to the global game state, and transitions back to the main menu.
-        Parameters:
-        None.
-        Limitations:
-        If a user leaves an input field entirely blank or types a 0 for duration, the system silently overwrites it with default values without providing visual warning feedback.
-        Structures:
-        Basic conditional validation checks. Mutates `self.game` attributes and updates `self.game.current_screen`.
-        Outputs:
-        None.
-        '''
+        """Validate inputs, apply settings to the game, and return to menu."""
         # If left empty assign the default values
         if self.text_duration == "" or int(self.text_duration) < 1:
             self.text_duration = "5"
@@ -84,18 +72,15 @@ class SettingsScreen(Screen):
         self.game.current_screen = self.game.start_screen
 
     def handle_event(self, event):
-        '''
+        """
         Description:
-        Processes mouse and keyboard inputs to handle input field selection, numeric typing, backspacing, and saving. Enforces maximum value limits for each specific field dynamically as the user types.
-        Parameters:
-        event (pygame.event.Event): The captured input event.
-        Limitations:
-        When clicking into a field, it immediately clears the previous value (`self.text_duration = ""`). Cursor navigation (e.g., arrow keys) within the text box is not supported.
-        Structures:
-        Nested `if/elif` statements checking event types, mouse collision (`collidepoint`), and keyboard unicode types (`isnumeric()`).
-        Outputs:
-        None.
-        '''
+        Handles user interaction with the settings inputs and buttons.
+
+        Function:
+        Detects clicks to select input fields, processes numeric typing
+        and backspace, enforces value limits, and triggers saving when
+        the save button is pressed.
+        """
         mouse = pygame.mouse.get_pos()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -156,18 +141,7 @@ class SettingsScreen(Screen):
                             self.text_loss = yeni_metin
 
     def draw(self, screen):
-        '''
-        Description:
-        Renders the settings menu UI. Draws the active and inactive states of the input fields, their respective labels, and the interactive save button.
-        Parameters:
-        screen (pygame.Surface): The primary display surface window.
-        Limitations:
-        -
-        Structures:
-        Defines a nested helper function `draw_input_section` to reduce code duplication for the three identical input rows. Uses `pygame.draw.rect` for styling boxes and `screen.blit` for layering text.
-        Outputs:
-        Refreshes the display surface with the current settings interface.
-        '''
+        """Draw the settings UI, input fields, labels, and save button."""
         screen.fill((44, 44, 62))
         mouse = pygame.mouse.get_pos()
 

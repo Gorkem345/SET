@@ -7,31 +7,32 @@ pygame.init()
 
 
 class StartScreen(Screen):
-    '''
+    """
+    README - StartScreen
+
     Description:
-    Represents the main menu (landing page) of the SET game. It acts as the primary navigation hub, allowing the user to route to the single-player or multiplayer game modes (via the PreStartScreen), view the rules, adjust settings, or quit the application entirely.
+    This class represents the main menu of the SET game.
+    It allows the player to navigate to singleplayer, multiplayer,
+    rules, settings, or quit the game.
+
     Parameters:
-    game: The central Game object acting as the main controller.
-    Limitations:
-    UI coordinates and layout are hardcoded based on an assumed 1080x720 base resolution. Keyboard navigation (e.g., using arrow keys or Tab) is not supported.
-    Structures:
-    Inherits from the `Screen` base class. Employs `pygame.image.load` for visual assets and `pygame.Rect` objects to define the clickable hit-boxes for menu buttons.
-    Outputs:
-    An initialized StartScreen instance ready to capture menu interactions.
-    '''
+    game:
+        The main Game object used to control screen transitions
+        and shared game resources.
+
+    Structure:
+        - Inherits from Screen
+        - Loads the game logo image
+        - Creates button areas for menu navigation
+        - Handles mouse input for screen changes
+        - Draws the main menu interface
+
+    Output:
+        Displays the start menu and updates the current screen
+        based on the player's menu selection.
+    """
     def __init__(self, game):
-        '''
-        Description:
-        Initializes the StartScreen by loading the game's logo and defining the spatial boundaries (Rects) for all navigation buttons on the screen.
-        Parameters:
-        game: The main Game object.
-        Limitations:
-        Assumes the logo image exists at the specific relative path `"images/set_cards.png"`. If missing, the application will crash.
-        Structures:
-        Calls `super().__init__(game)` to inherit the central controller. Instantiates multiple `pygame.Rect` objects with hardcoded coordinates for hit-box detection.
-        Outputs:
-        None.
-        '''
+        """Initialize the start screen layout, logo, and menu buttons."""
         super().__init__(game) # store the Game object inside this Startscreen
         # because it needs Game, the main controller to run
 
@@ -47,18 +48,15 @@ class StartScreen(Screen):
         self.settings_button = pygame.Rect(940, 600, 140, 50)
 
     def handle_event(self, event):
-        '''
+        """
         Description:
-        Processes user inputs on the main menu, specifically listening for left mouse clicks. Maps clicks on specific button boundaries to screen transitions or application termination.
-        Parameters:
-        event (pygame.event.Event): The input event captured by the main Pygame event loop.
-        Limitations:
-        -
-        Structures:
-        Evaluates `if event.type == pygame.MOUSEBUTTONDOWN`. Uses `pygame.Rect.collidepoint()` to check the mouse position against button Rects. Mutates the central `self.game.current_screen` to trigger transitions, or calls `sys.exit()` to terminate.
-        Outputs:
-        None.
-        '''
+        Handles user input on the main menu screen.
+
+        Function:
+        Detects mouse clicks on menu buttons and changes the current
+        screen accordingly, including starting singleplayer or multiplayer,
+        opening rules or settings, or quitting the application.
+        """
         mouse = pygame.mouse.get_pos()  # get mouse position
 
         if event.type == pygame.MOUSEBUTTONDOWN:  # if mouse was clicked
@@ -90,18 +88,7 @@ class StartScreen(Screen):
                 self.game.current_screen = self.game.settings_screen
 
     def draw(self, screen):
-        '''
-        Description:
-        Renders the entire main menu interface. Draws the background, the centered logo, the title text, and all navigation buttons. Provides dynamic visual feedback by altering button colors when hovered over by the mouse.
-        Parameters:
-        screen (pygame.Surface): The primary display surface window where graphics are blitted.
-        Limitations:
-        -
-        Structures:
-        Uses `screen.fill()` for the base background. Draws buttons using `pygame.draw.rect()` with a ternary operator (`LIGHT if ... else DARK`) to handle hover states. Uses `screen.blit()` to layer pre-rendered font surfaces and the logo image onto the screen.
-        Outputs:
-        Refreshes the menu visuals on the provided screen Surface.
-        '''
+        """Draw the main menu interface, buttons, title, and logo."""
         mouse = pygame.mouse.get_pos()
         screen.fill(BG)
 

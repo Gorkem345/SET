@@ -1,5 +1,7 @@
 import pygame
 from utils.constants import WHITE, DARK, LIGHT
+from screens.TableDisplay import Display_board
+from utils.set_table import Table
 import random
 from screens.PlayScreen import PlayScreen
 
@@ -20,15 +22,13 @@ class SingleplayerScreen(PlayScreen):
     def __init__(self, game):  # self.game_screen = GameScreen(self)
         '''
         Description:
-        Initializes the single-player environment, calling the parent setup and establishing computer-specific variables
-        like independent scores, AI timers, and difficulty settings.
+        Initializes the single-player environment, calling the parent setup and establishing computer-specific variables like independent scores, AI timers, and difficulty settings.
         Parameters:
         game: The main Game object.
         Limitations:
         Default difficulty is hardcoded to "Normal" upon initialization.
         Structures:
-        Calls `super().__init__(game)`. Sets up an empty list `comp_clicks_pending` to act as a queue for the AI's
-        automated card clicks.
+        Calls `super().__init__(game)`. Sets up an empty list `comp_clicks_pending` to act as a queue for the AI's automated card clicks.
         Outputs:
         None.
         '''
@@ -52,8 +52,7 @@ class SingleplayerScreen(PlayScreen):
     def reset_game_screen(self):
         '''
         Description:
-        Completely resets the single-player specific data (scores, computer timers, and queued AI clicks) alongside the
-        base UI and table resets from the parent class, preparing a fresh match.
+        Completely resets the single-player specific data (scores, computer timers, and queued AI clicks) alongside the base UI and table resets from the parent class, preparing a fresh match.
         Parameters:
         None.
         Limitations:
@@ -75,8 +74,7 @@ class SingleplayerScreen(PlayScreen):
     def clear_set_timer(self):
         '''
         Description:
-        Stops the 15-second active answering timer via the parent class, and simultaneously resets the computer's
-        hidden timer so it can begin "thinking" about its next move.
+        Stops the 15-second active answering timer via the parent class, and simultaneously resets the computer's hidden timer so it can begin "thinking" about its next move.
         Parameters:
         None.
         Limitations:
@@ -92,8 +90,7 @@ class SingleplayerScreen(PlayScreen):
     def resume_game_timer(self):
         '''
         Description:
-        Unpauses the game, ensuring that both the global game timer and the computer's internal target time are pushed
-        forward to account for the time spent paused.
+        Unpauses the game, ensuring that both the global game timer and the computer's internal target time are pushed forward to account for the time spent paused.
         Parameters:
         None.
         Limitations:
@@ -113,15 +110,13 @@ class SingleplayerScreen(PlayScreen):
     def check_game_timeout(self):
         '''
         Description:
-        Monitors the global game timer. If time expires, it forces an end-game state, determines the winner between the
-        human and AI based on current scores, and transitions the game to the WinnerScreen.
+        Monitors the global game timer. If time expires, it forces an end-game state, determines the winner between the human and AI based on current scores, and transitions the game to the WinnerScreen.
         Parameters:
         None.
         Limitations:
         -
         Structures:
-        Uses basic if/elif comparison logic. Mutates attributes on the central `self.game` object to pass data to the
-        WinnerScreen.
+        Uses basic if/elif comparison logic. Mutates attributes on the central `self.game` object to pass data to the WinnerScreen.
         Outputs:
         None.
         '''
@@ -144,13 +139,11 @@ class SingleplayerScreen(PlayScreen):
     def check_winner(self):
         '''
         Description:
-        Monitors the table state. If there are no possible SETs left in the deck/table, it ends the game, calculates
-        the winner between the player and computer, updates global state, and navigates to the WinnerScreen.
+        Monitors the table state. If there are no possible SETs left in the deck/table, it ends the game, calculates the winner between the player and computer, updates global state, and navigates to the WinnerScreen.
         Parameters:
         None.
         Limitations:
-        Relying on `self.game.table.find_sets()` being empty assumes the `Table` class has accurately exhausted all
-        reshuffling attempts.
+        Relying on `self.game.table.find_sets()` being empty assumes the `Table` class has accurately exhausted all reshuffling attempts.
         Structures:
         If/elif conditions for score comparison, followed by global state mutation and a screen routing change.
         Outputs:
@@ -175,15 +168,13 @@ class SingleplayerScreen(PlayScreen):
     def reset_computer_timer(self):
         '''
         Description:
-        Calculates a randomized future timestamp (`comp_target_time`) dictating when the computer will attempt to find
-        and claim a SET. The delay scales based on the current difficulty setting.
+        Calculates a randomized future timestamp (`comp_target_time`) dictating when the computer will attempt to find and claim a SET. The delay scales based on the current difficulty setting.
         Parameters:
         None.
         Limitations:
         Hardcoded integer bounds for the randomization ranges.
         Structures:
-        Evaluates `self.difficulty` strings ("Easy", "Normal", "Hard") to pick a bound, then uses `random.randint`
-        added to `pygame.time.get_ticks()`.
+        Evaluates `self.difficulty` strings ("Easy", "Normal", "Hard") to pick a bound, then uses `random.randint` added to `pygame.time.get_ticks()`.
         Outputs:
         None.
         '''
@@ -201,16 +192,13 @@ class SingleplayerScreen(PlayScreen):
     def update_computer(self):
         '''
         Description:
-        The core AI state machine. Evaluates whether the computer is "clicking" (processing queued card selections with
-        human-like visual delays) or "thinking" (waiting for its timer to expire). It occasionally injects intentional mistakes into the computer's clicks based on difficulty probability.
+        The core AI state machine. Evaluates whether the computer is "clicking" (processing queued card selections with human-like visual delays) or "thinking" (waiting for its timer to expire). It occasionally injects intentional mistakes into the computer's clicks based on difficulty probability.
         Parameters:
         None.
         Limitations:
-        Because mistakes are generated using entirely random board indices, the AI's "mistakes" often look completely
-        illogical to a human player, rather than being "close" misses.
+        Because mistakes are generated using entirely random board indices, the AI's "mistakes" often look completely illogical to a human player, rather than being "close" misses.
         Structures:
-        Operates on current millisecond ticks. Uses `list.pop(0)` to process queued clicks. Calculates mistake
-        probabilities using `random.randint(1, a)` where `a` varies by difficulty.
+        Operates on current millisecond ticks. Uses `list.pop(0)` to process queued clicks. Calculates mistake probabilities using `random.randint(1, a)` where `a` varies by difficulty.
         Outputs:
         None.
         '''
@@ -297,16 +285,13 @@ class SingleplayerScreen(PlayScreen):
     def handle_event(self, event):
         '''
         Description:
-        Intercepts user inputs specific to the Singleplayer screen. Processes the human player pressing Spacebar to
-        claim a turn, clicking UI buttons, and selecting cards on the table while explicitly blocking human card selection during the computer's turn.
+        Intercepts user inputs specific to the Singleplayer screen. Processes the human player pressing Spacebar to claim a turn, clicking UI buttons, and selecting cards on the table while explicitly blocking human card selection during the computer's turn.
         Parameters:
         event (pygame.event.Event): The Pygame event object triggered by keyboard or mouse actions.
         Limitations:
-        Heavily nested logic structure. Requires precise mapping between the mouse collision points and the visual
-        boundaries defined in the parent class.
+        Heavily nested logic structure. Requires precise mapping between the mouse collision points and the visual boundaries defined in the parent class.
         Structures:
-        Branches based on `event.type`. Uses `pygame.Rect.collidepoint` for button presses and queries
-        `self.board.get_clicked_card_index` for board interactions. Directly invokes scoring arithmetic and audio feedback on successful/failed SETs.
+        Branches based on `event.type`. Uses `pygame.Rect.collidepoint` for button presses and queries `self.board.get_clicked_card_index` for board interactions. Directly invokes scoring arithmetic and audio feedback on successful/failed SETs.
         Outputs:
         None.
         '''
@@ -397,18 +382,13 @@ class SingleplayerScreen(PlayScreen):
     def draw(self, screen):
         '''
         Description:
-        Renders the comprehensive visual state of the Singleplayer mode. Responsible for drawing the background,
-        prompting the computer logic to update, rendering the playing board, and formatting the UI panels (scores,
-        remaining cards, timers, buttons, and dynamic status messaging).
+        Renders the comprehensive visual state of the Singleplayer mode. Responsible for drawing the background, prompting the computer logic to update, rendering the playing board, and formatting the UI panels (scores, remaining cards, timers, buttons, and dynamic status messaging).
         Parameters:
         screen (pygame.Surface): The primary display surface window where graphics are blitted.
         Limitations:
-        Coordinates, box sizes, and padding offsets are hardcoded, relying on Pygame's SCALED environment to adapt to
-        various monitors.
+        Coordinates, box sizes, and padding offsets are hardcoded, relying on Pygame's SCALED environment to adapt to various monitors.
         Structures:
-        Calls `update_computer()` before drawing. Uses `pygame.draw.rect` for styling panels/buttons and
-        `self.game.font.render` for text. Derives hover-states dynamically by comparing `pygame.mouse.get_pos()`
-        against the parent UI Rects.
+        Calls `update_computer()` before drawing. Uses `pygame.draw.rect` for styling panels/buttons and `self.game.font.render` for text. Derives hover-states dynamically by comparing `pygame.mouse.get_pos()` against the parent UI Rects.
         Outputs:
         Refreshes the visual output on the provided screen Surface.
         '''

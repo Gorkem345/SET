@@ -1,5 +1,5 @@
 '''
-Constants that are going to be used in multiple files are initialized in this file.
+Constants are the RGB code of colors that are going to be used in multiple files are initialized in this file.
 '''
 
 WHITE = (255,255,255)

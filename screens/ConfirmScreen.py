@@ -5,34 +5,34 @@ from screens.screen import Screen
 
 class ConfirmScreen(Screen):
     """
-        README - ConfirmScreen
+    README - ConfirmScreen
 
-        Description:
-        This class represents a confirmation overlay screen that appears when the player
-        attempts to perform important actions such as returning to the menu or restarting the game.
-        It pauses the current game, shows a countdown, and asks the player to confirm the action.
+    Description:
+    This class represents a confirmation overlay screen that appears when the player
+    attempts to perform important actions such as returning to the menu or restarting the game.
+    It pauses the current game, shows a countdown, and asks the player to confirm the action.
 
-        Parameters:
-        game:
-            The main Game object.
-            It provides access to:
-            - current screen switching
-            - game_screen and singleplayer_screen
-            - fonts
-            - timer control functions
+    Parameters:
+    game:
+        The main Game object.
+        It provides access to:
+        - current screen switching
+        - game_screen and singleplayer_screen
+        - fonts
+        - timer control functions
 
-        Structure:
-            - Inherits from Screen
-            - Displays a dark overlay and centered confirmation panel
-            - Contains a "YES" button for confirming actions
-            - Uses a countdown timer (3 seconds)
-            - Stores pending action type (menu / restart / singleplayer variants)
+    Structure:
+        - Inherits from Screen
+        - Displays a dark overlay and centered confirmation panel
+        - Contains a "YES" button for confirming actions
+        - Uses a countdown timer (3 seconds)
+        - Stores pending action type (menu / restart / singleplayer variants)
 
-        Output:
-            This class does not return values directly.
-            It controls screen transitions and game state changes based on user input
-            or countdown expiration.
-        """
+    Output:
+        This class does not return values directly.
+        It controls screen transitions and game state changes based on user input
+        or countdown expiration.
+    """
     def __init__(self, game):
         """Initialize confirmation screen state and timer."""
         super().__init__(game)
