@@ -1,9 +1,16 @@
 
-# **Case work: The game Set **  
-### **Authors: Donna Keurentjes, ..., ...**
+# **Case work: The Game Set**  
+### **Authors: İsa Görkem Akdoğan, Mingyang Wang, Donna Keurentjes**
 ### **Group: 1**
-### **Course: Advanced Programming in Python (WUR)**
+### **Course: Advanced Programming in Python (WUR)** 
 
+## ***Instructions:***
+### Install libraries: 
+- pygame
+- sys
+- random
+- copy
+### *Run Game.py to open the game*
 ---
 
 ## **1. DESCRIPTION**
@@ -17,18 +24,19 @@ Players need to identify valid SETs among cards displayed on the table. The game
 
 ### **1.1 Game**
 ### **1.2 Set table**
-### **1.3 Image dictionary**
-### **1.4 Screen**
-#### **1.4.1 Start**
-#### **1.4.2 Rules**
-#### **1.4.3 Pre-start**
-#### **1.4.4 Play**
-##### **1.4.4.1 Multiplayer**
-##### **1.4.4.2 Singleplayer**
-#### **1.4.5 Confirm**
-#### **1.4.6 Winner**
-#### **1.4.7 Settings**
-### **1.5 Constants**
+### **1.3 Cards deck**
+### **1.4 Table Display**
+### **1.5 Screen**
+#### **1.5.1 Start**
+#### **1.5.2 Rules**
+#### **1.5.3 Pre-start**
+#### **1.5.4 Play**
+##### **1.5.4.1 Multiplayer**
+##### **1.5.4.2 Singleplayer**
+#### **1.5.5 Confirm**
+#### **1.5.6 Winner**
+#### **1.5.7 Settings**
+### **1.6 Constants**
 
 ---
 
@@ -45,17 +53,18 @@ Players need to identify valid SETs among cards displayed on the table. The game
 
 ### **1.1 Game**
 ### **1.2 Set table**
-### **1.3 Image dictionary**
-### **1.4 Screen**
-#### **1.4.1 Start**
-#### **1.4.2 Rules**
-#### **1.4.3 Pre-start**
-#### **1.4.4 Play**
-##### **1.4.4.1 Multiplayer**
-##### **1.4.4.2 Singleplayer**
-#### **1.4.5 Confirm**
-#### **1.4.6 Winner**
-#### **1.4.7 Settings**
+### **1.3 Cards deck**
+### **1.4 Table Display**
+### **1.5 Screen**
+#### **1.5.1 Start**
+#### **1.5.2 Rules**
+#### **1.5.3 Pre-start**
+#### **1.5.4 Play**
+##### **1.5.4.1 Multiplayer**
+##### **1.5.4.2 Singleplayer**
+#### **1.5.5 Confirm**
+#### **1.5.6 Winner**
+#### **1.5.7 Settings**
 
 ---
 
@@ -65,7 +74,7 @@ Players need to identify valid SETs among cards displayed on the table. The game
 - Window size is fixed and not resizable (does not fit correctly on every laptop)
 - No save/load system (e.g. no highscore)
 - The difficulty has standard values, it is not adapted automatically to the player's behavior
-
+- The game cannot be played by more than 2 players
 ---
 
 ## **4. STRUCTURES**

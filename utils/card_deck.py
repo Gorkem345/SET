@@ -39,7 +39,29 @@ Example id: empty red circle 1 -> erc1
 
 
 class Card:
+    '''
+    Description:
+    Represents a single SET game card, parsing and storing its visual attributes (filling, color, shape, count) based
+    on a 4-character ID. It also holds the spatial pixel coordinates to locate the specific card image on the main
+    sprite sheet (cover.png).
+    Parameters:
+    id (str): A 4-character string defining the card's properties based on the indexing rules.
+    Limitations:
+    The 'id' parameter must strictly adhere to the predefined 4-character format and character set.
+    The class lacks built-in validation to ensure the parsed ID is a valid id or that the coordinates fall within the
+    actual bounds of the source image.
+    Structures:
+    Public string attributes for traits: 'filling', 'color', 'shape', and 'count'.
+    Private list attribute _coordinates (managed via @property getter/setter methods) to store the spatial data
+    as [x_start, y_start, width, height].
+    Outputs:
+    An instantiated `Card` object containing its parsed attributes and a default '_coordinates' list of [0, 0, 0, 0]
+    until updated using the set method.
+    '''
     def __init__(self, id):
+        '''
+        Builds the card from id(str)
+        '''
         self._coordinates = [0,0,0,0] #Temporary coordinate value.
         self.filling = id[0]
         self.color = id[1]
@@ -49,22 +71,41 @@ class Card:
     @property #with this, when do card.coordinates, it actually does card.coordinates()
               #a method behave like a normal variable
     def coordinates(self):
+        '''
+        Getter for coordinates
+        '''
         return self._coordinates #e.g. card.coordinates = [13, 11, 178, 115]
 
     @coordinates.setter
     def coordinates(self, value):
+        '''
+        Setter for coordinates
+        Parameters:
+        value (list): list of coordinates -> [x_start, y_start, width, length]
+        '''
         self._coordinates = value
 
     #Set the coordinates of the card
     def set(self, x, y, width, height):
+        '''
+        Calls the setter for coordinates
+        Parameters:
+        value (list): list of coordinates -> [x_start, y_start, width, length]
+        '''
         self.coordinates = [x,y,width,height]
 
     #rebuild the card ID from its attributes into a string
     def get_id(self):
+        '''
+        Rebuilds the id string from attributes of the card.
+        '''
         return str(self.filling) + str(self.color) + str(self.shape) + str(self.count)
 
     #define the outprint pattern when print a card, for debugging
     def __repr__(self):
+        '''
+        Used to print the card object
+        '''
         return str("Coordinates: ") + str(self.coordinates) + str(" / ID: ") + str(self.filling) + str(self.color) + str(self.shape) + str(self.count) + "\n"
 
 #Create a card dictionary for store and to be called and used in the game
@@ -92,6 +133,7 @@ x_cor = 13
 y_cor = 11
 
 #loop over one by one, start from the first column of the first row
+#follow the pattern seen on the image
 for row in range(9):
     for col in range(9):
         cards[ids[row][col]] = Card(ids[row][col]) #now in cards dictionary, {epc2: Card('epc2)}
